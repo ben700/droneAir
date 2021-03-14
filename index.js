@@ -98,7 +98,7 @@ exports.getDownDroneAirLoadUrl = async ( req, res ) => {
           fullname,
           version,
           createdAt
-        FROM \`droneair.ota.firmwares\`
+        FROM \`drone-302200.ota.firmwares\`
         where variant = @variant
         order by createdAt desc
         limit 1      
