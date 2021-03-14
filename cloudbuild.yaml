@@ -1,0 +1,8 @@
+steps:
+- name: 'ben700/platformio-core:latest'  
+  dir: .
+  args: ['run']  
+artifacts: 
+  objects: 
+    location: 'gs://droneair-firmwares/$TAG_NAME'
+    paths: ['/workspace/.pioenvs/esp8266/droneair_firmware.bin']
