@@ -12,6 +12,17 @@
 # below:
 .git
 .gitignore
-
+data/
+src/
+test/
+include/
+lib/
+readme.md
+/README.md
+/LICENSE.md
+/platformio.ini
+/extra_script.py
+/add_device_iot.py
+/deploy-prod.sh
 node_modules
 #!include:.gitignore

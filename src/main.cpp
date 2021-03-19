@@ -1,7 +1,3 @@
-#define VARIANT "esp8266"
-#define USE_SERIAL Serial
-#define CURRENT_VERSION VERSION
-#define CLOUD_FUNCTION_URL "http://europe-west2-drone-302200.cloudfunctions.net/getDownDroneMonitorLoadUrl"
 
 #include <DroneWiFiConnect.h>
 #include <ArduinoJson.h>

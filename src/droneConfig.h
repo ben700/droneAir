@@ -4,7 +4,10 @@
 #include "Arduino.h"
 #include "DroneSensorAir.h"
 #include <NTPClient.h>
-
+#define VARIANT "droneAir"
+#define USE_SERIAL Serial
+#define CURRENT_VERSION VERSION
+#define CLOUD_FUNCTION_URL "http://europe-west2-drone-302200.cloudfunctions.net/getDownDroneAirLoadUrl"
 #define _ChipId ESP.getChipId() 
 // Configuration for NTP
 // Define NTP Client to get time
@@ -16,9 +19,9 @@ NTPClient timeClient(ntpUDP);
 const char* project_id = "drone-302200";
 const char* location = "europe-west1";
 const char* registry_id = "droneDevice";
-const char* device_type = "droneAir";
-const char* device_id = String(device_type + String(_ChipId)).c_str();
-
+const char* device_type = VARIANT;
+String deviceId = "droneAir" + String(_ChipId);
+const char* device_id = deviceId.c_str();
 // Time (seconds) to expire token += 20 minutes for drift
 const int jwt_exp_secs = 36000; // Maximum 24H (3600*24)
 
