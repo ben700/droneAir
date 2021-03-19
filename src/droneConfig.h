@@ -5,6 +5,7 @@
 #include "DroneSensorAir.h"
 #include <NTPClient.h>
 
+#define _ChipId ESP.getChipId() 
 // Configuration for NTP
 // Define NTP Client to get time
 const char* ntp_primary = "time.google.com";
@@ -15,7 +16,8 @@ NTPClient timeClient(ntpUDP);
 const char* project_id = "drone-302200";
 const char* location = "europe-west1";
 const char* registry_id = "droneDevice";
-const char* device_id = (char*) ESP.getChipId();
+const char* device_type = "droneAir";
+const char* device_id = String(device_type + String(_ChipId)).c_str();
 
 // Time (seconds) to expire token += 20 minutes for drift
 const int jwt_exp_secs = 36000; // Maximum 24H (3600*24)

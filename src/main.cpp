@@ -1,7 +1,7 @@
 #define VARIANT "esp8266"
 #define USE_SERIAL Serial
 #define CURRENT_VERSION VERSION
-#define CLOUD_FUNCTION_URL "http://eu-gcloud-ota-update-dronemonitor.cloudfunctions.net/getDownDroneAirLoadUrl"
+#define CLOUD_FUNCTION_URL "http://europe-west2-drone-302200.cloudfunctions.net/getDownDroneMonitorLoadUrl"
 
 #include <DroneWiFiConnect.h>
 #include <ArduinoJson.h>
@@ -54,7 +54,7 @@ String getDownloadUrl()
 
   String url = CLOUD_FUNCTION_URL;
   url += String("?version=") + CURRENT_VERSION;
-  url += String("&variant=") + VARIANT;
+  url += String("&variant=") + device_type;
   http.begin(client, url);
 
   USE_SERIAL.print("[HTTP] GET...\n");

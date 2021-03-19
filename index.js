@@ -7,6 +7,7 @@ const BQ_DATASET = 'ota'
 const BQ_TABLE = 'firmwares'
 const TABLE_SCHEMA = 'id:string, eventType: string, bucket:string, version:string, fullname:string, filename:string, variant:string, createdAt:timestamp'
 const projectId = 'drone-302200'
+const device_type  = "droneAir"
 
 const bqClient = new BigQuery( { projectId } )
 const storage = new Storage()
@@ -71,7 +72,7 @@ exports.insertDroneAirFirmwaresOnBigquery = ( data, context ) => {
     version,
     fullname : file.name,
     filename,
-    variant,
+    device_type,
     createdAt : file.timeCreated,
     eventType : context.eventType,
   }
@@ -99,12 +100,12 @@ exports.getDownDroneAirLoadUrl = async ( req, res ) => {
           version,
           createdAt
         FROM \`drone-302200.ota.firmwares\`
-        where variant = @variant
+        where variant = @device_type
         order by createdAt desc
         limit 1      
       `,
       params : {
-        variant
+        device_type
       }
     }
 
@@ -113,8 +114,7 @@ exports.getDownDroneAirLoadUrl = async ( req, res ) => {
       const firmware = rows[0]
       
       // latest > current
-      const needsUpdate = semver.gt( firmware.version, version )      
-      if ( needsUpdate ) {
+      if ( firmware.version != version) {
         const url = await getPublicUrl( firmware.fullname )
         console.log( 'Sending url', url )
         res.status( 200 ).send( url );
