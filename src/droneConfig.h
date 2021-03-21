@@ -7,7 +7,7 @@
 #define VARIANT "droneAir"
 #define USE_SERIAL Serial
 #define CURRENT_VERSION VERSION
-#define CLOUD_FUNCTION_URL "http://europe-west2-drone-302200.cloudfunctions.net/getDownDroneAirLoadUrl"
+#define CLOUD_FUNCTION_URL "http://europe-west2-drone-302200.cloudfunctions.net/getFirmwareDownloadUrl"
 #define _ChipId ESP.getChipId() 
 // Configuration for NTP
 // Define NTP Client to get time

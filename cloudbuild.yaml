@@ -4,5 +4,5 @@ steps:
   args: ['run']  
 artifacts: 
   objects: 
-    location: 'gs://droneair-firmwares/$TAG_NAME'
-    paths: ['/workspace/.pioenvs/esp8266/droneair_firmware.bin']
+    location: 'gs://drone-firmwares/$TAG_NAME'
+    paths: ['/workspace/.pioenvs/esp8266/droneAir_firmware.bin']
