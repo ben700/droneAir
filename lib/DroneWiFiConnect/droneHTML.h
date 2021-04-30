@@ -145,7 +145,7 @@ const char AP_HTTP_SAVED[] PROGMEM           =
 ",t.ontimeout=function(t){console.log(\"Timeout Counter is: \"+timeout_count++)},t.open(\"GET\",\"/foo\"),"
 "t.timeout=1e3,t.send(null),console.log(\"Ping counter is: \"+attempt_count++)}attempt_count=0,timeout_count=0;"
 "var myPinger=window.setInterval(doPing,3e3);</script>"
-"<div class=\"cok\" id=\"conn_ok\">Connected to {ap} !<br />You may now close this window. </div>"
+"<div class=\"cok\" id=\"conn_ok\">Connected to {ap} !<br />You may now close this window.<br /><img src='/qr.png'></div>"
 "<div class=\"cfail\" id=\"conn_fail\">Failed to connect to {ap}!<br />"
 "<a href=\"/\"><span class='retry_icon'>&nbsp</span>Click here</a> to try again.</div></div>";
 
