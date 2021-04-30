@@ -118,7 +118,7 @@ boolean WiFiConnect::startConfigurationPortal(AP_Continue apcontinue, const char
     server->serveStatic("/store_logo.png", LittleFS, "/store_logo.png"); 
     server->serveStatic("/bgGloss.png", LittleFS, "/bgGloss.png"); 
     server->serveStatic("/bgGlass.png", LittleFS, "/bgGlass.png"); 
-    
+    server->serveStatic("/qr.png", LittleFS, "/qr.png");     
 
     server->onNotFound     (std::bind(&WiFiConnect::handleRoot, this));
     server->begin(); // Web server start
