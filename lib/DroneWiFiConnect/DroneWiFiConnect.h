@@ -3,13 +3,12 @@
 
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
+#include <LittleFS.h>
 #include <ESP8266WebServer.h>
 #include <DNSServer.h>
-#include <LittleFS.h>
 #include <memory>
-
-#define ESP_getChipId()   (ESP.getChipId()) ///< Gets an ID from the chip
 #include "droneHTML.h"
+
 
 
 

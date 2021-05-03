@@ -19,7 +19,7 @@ void  WiFiConnect::setDeviceId(const char *deviceId){
 void WiFiConnect::setAPName(const char *apName) {
   if(strlen(apName)>32){return;}
   if (strlen(apName)==0||(apName == NULL)) {
-    String ssid = "Drone_" + String(ESP_getChipId());
+    String ssid = String(this->_deviceId);
     //_apName = ssid.c_str();
     strcpy(_apName,ssid.c_str());
 
@@ -36,6 +36,8 @@ const char* WiFiConnect::getAPName() {
   return _apName;
 }
 
+
+
 boolean WiFiConnect::startConfigurationPortal() {
   return startConfigurationPortal(AP_NONE, _apName, _apPassword);
 }
@@ -48,12 +50,7 @@ boolean WiFiConnect::startConfigurationPortal(AP_Continue apcontinue, const char
   DEBUG_WC(F("WiFi AP STA - Configuration Portal"));
 
   _lastAPPage = millis();
-
-  
-#ifdef ARDUINO_ARCH_ESP8266 
   WiFi.setSleepMode(WIFI_NONE_SLEEP);
-#endif 
-
   delay(50);
 
   if (WiFi.status() != WL_CONNECTED) {
@@ -65,11 +62,8 @@ boolean WiFiConnect::startConfigurationPortal(AP_Continue apcontinue, const char
     WiFi.mode(WIFI_AP_STA); // start an access point on the same channel we're already connected to.
   }
   dnsServer.reset(new DNSServer());
-#ifdef ESP8266
-  server.reset(new ESP8266WebServer(80));
-#else
-  server.reset(new WebServer(80));
-#endif
+server.reset(new ESP8266WebServer(80));
+
   setAPName(apName);
   DEBUG_WC(_apName);
 
@@ -102,10 +96,20 @@ boolean WiFiConnect::startConfigurationPortal(AP_Continue apcontinue, const char
   DEBUG_WC(F("AP IP address: "));
   DEBUG_WC(WiFi.softAPIP());
   
+
+
+
+
   /* Setup the DNS server redirecting all the domains to the apIP */
   dnsServer->setErrorReplyCode(DNSReplyCode::NoError);
   dnsServer->start(DNS_PORT, "*", WiFi.softAPIP());
-   
+
+  if (!LittleFS.begin())
+  {
+    Serial.println("Failed to mount file system");
+  }
+
+
     /* Setup web pages: root, wifi config pages, SO captive portal detectors and not found. */
     server->on("/",       std::bind(&WiFiConnect::handleRoot, this));
     server->on("/wifi",     std::bind(&WiFiConnect::handleWifi, this, true));   // Auto Scan of APs
@@ -113,17 +117,19 @@ boolean WiFiConnect::startConfigurationPortal(AP_Continue apcontinue, const char
     server->on("/wifisave",   std::bind(&WiFiConnect::handleWifiSave, this));
     server->on("/i",      std::bind(&WiFiConnect::handleInfo, this)); // Not of interest - commented out in static HTML
     server->on("/r",      std::bind(&WiFiConnect::handleReset, this));
-    server->serveStatic("/favicon.ico", LittleFS, "/favicon.ico");
-    server->serveStatic("/style.css", LittleFS, "/style.css"); 
-    server->serveStatic("/store_logo.png", LittleFS, "/store_logo.png"); 
-    server->serveStatic("/bgGloss.png", LittleFS, "/bgGloss.png"); 
-    server->serveStatic("/bgGlass.png", LittleFS, "/bgGlass.png"); 
-    server->serveStatic("/qr.png", LittleFS, "/qr.png");     
+    server->serveStatic("/favicon.ico", LittleFS , "/data/favicon.ico");
+    server->serveStatic("/style.css", LittleFS , "/data/style.css"); 
+    server->serveStatic("/store_logo.png", LittleFS , "/data/store_logo.png"); 
+    server->serveStatic("/bgGloss.png", LittleFS , "/data/bgGloss.png"); 
+    server->serveStatic("/bgGlass.png", LittleFS , "/data/bgGlass.png"); 
+    server->serveStatic("/qr.png", LittleFS , "/data/qr.png"); 
+    
+    
 
     server->onNotFound     (std::bind(&WiFiConnect::handleRoot, this));
     server->begin(); // Web server start
     DEBUG_WC(F("HTTP server started"));
-
+    LittleFS.end();
   //notify we entered AP mode
   if ( _apcallback != NULL) {
     _apcallback(this);
@@ -197,11 +203,8 @@ boolean WiFiConnect::startConfigurationPortal(AP_Continue apcontinue, const char
        case AP_RESET:
         DEBUG_WC(F("AP restart chip"));
         delay(1000);
-#if defined(ESP8266)
         ESP.reset();
-#else
-        ESP.restart();
-#endif
+
         delay(2000);
     }
     WiFi.mode(WIFI_STA);
@@ -212,11 +215,8 @@ boolean WiFiConnect::autoConnect() {
   return autoConnect(NULL, NULL, WIFI_STA);
 }
 boolean WiFiConnect::autoConnect(char const *ssidName, char const *ssidPassword, WiFiMode_t acWiFiMode) {
- #if defined(ESP8266)
-        WiFi.hostname(this->_deviceId);
-#else
-        WiFi.setHostname(this->_deviceId);
-#endif 
+  WiFi.hostname(this->_deviceId);
+
   DEBUG_WC(F("Auto Connect"));
   WiFi.mode(acWiFiMode);
   DEBUG_WC("autoConnect():WiFi.mode(acWiFiMode)");
@@ -237,8 +237,7 @@ boolean WiFiConnect::autoConnect(char const *ssidName, char const *ssidPassword,
     long ms = millis();
     if (ssidName == NULL || strlen(ssidName)==0) {
     
-    #ifdef ESP8266
-        if (WiFi.SSID() == "")
+       if (WiFi.SSID() == "")
         {
           DEBUG_WC(F("No ESP8266 WiFi SSID configuration stored. Bailing."));
           return false;
@@ -248,26 +247,6 @@ boolean WiFiConnect::autoConnect(char const *ssidName, char const *ssidPassword,
         DEBUG_WC(F("Stored Password:"));
         DEBUG_WC("[" +WiFi.psk()+"]"); 
      
-               
-    #endif
-
-    #ifdef ESP32
-      // WiFi.SSID() Always returns null on ESP32.... Arduino framework bug?
-      // So use lower-level IDF function to pull persistent configuration.
-      wifi_config_t conf;
-      esp_wifi_get_config(WIFI_IF_STA, &conf);
-
-      String stored_ssid = String(reinterpret_cast<const char*>(conf.sta.ssid));
-      if (stored_ssid == "")
-      {
-        DEBUG_WC(F("No ESP32 WiFi SSID configuration stored. Bailing."));
-        return false;
-      }       
-
-        DEBUG_WC(F("Stored SSID:")); DEBUG_WC(stored_ssid);              
-    #endif
-
-        
       WiFi.begin(); // persistence is on by default, so if this WiFi connection should happen automatically
       DEBUG_WC("autoConnect(): WiFi.begin()");
 
@@ -316,17 +295,9 @@ void WiFiConnect::setConnectionTimeoutSecs(int timeout) {
 void WiFiConnect::resetSettings() {
   DEBUG_WC(F("Clearing Settings for:"));
   DEBUG_WC(WiFi.SSID());
-#if defined(ESP8266)
   WiFi.disconnect(true);
   delay(1000);
   ESP.reset();
-#else
-  WiFi.disconnect(true);//doesnt seem to work
-  esp_wifi_restore();//doesnt seem to work
-  WiFi.begin("0", "0"); //HACK
-  delay(1000);
-  ESP.restart();
-#endif
   delay(2000);
 }
 const char* WiFiConnect::statusToString(int state) {
@@ -361,7 +332,7 @@ const char* WiFiConnect::statusToString(int state) {
 template <typename Generic>
 void WiFiConnect::DEBUG_WC(Generic text) {
   if (_debug) {
-    Serial.print("*WC: ");
+    Serial.print("DEBUG_WC: ");
     Serial.println(text);
   }
 }
@@ -378,6 +349,16 @@ void WiFiConnect::handleRoot() {
     return;
   }
   _lastAPPage = millis();
+  
+  
+  if (!LittleFS.begin())
+  {
+    Serial.println("Failed to mount file system");
+    return;
+  }
+
+
+
   DEBUG_WC("Sending Root");
   String page = FPSTR(AP_HTTP_HEAD);
   page += FPSTR(AP_HTTP_SCRIPT);
@@ -465,11 +446,8 @@ void WiFiConnect::handleWifi(boolean scan) {
           rssiQ += quality;
           item.replace("{v}", WiFi.SSID(indices[i]));
           item.replace("{r}", rssiQ);
-#if defined(ESP8266)
           if (WiFi.encryptionType(indices[i]) != ENC_TYPE_NONE) {
-#else
-          if (WiFi.encryptionType(indices[i]) != WIFI_AUTH_OPEN) {
-#endif
+
             item.replace("{i}", "l");
             item.replace("{s}", "lock_icon");
             
@@ -569,7 +547,7 @@ void WiFiConnect::handleInfo() {
   page += FPSTR(AP_HTTP_HEAD_END);
   page += F("<dl>");
   page += F("<dt>Chip ID</dt><dd>");
-  page += ESP_getChipId();
+  page += String(this->_deviceId);
   page += F("</dd>");
   page += F("<dt>Flash Chip ID</dt><dd>");
 #if defined(ESP8266)

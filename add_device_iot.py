@@ -110,3 +110,4 @@ def createDevice():
 setProject()
 if(testIfDeviceExists()):
     createDevice()
+print(deviceName)
