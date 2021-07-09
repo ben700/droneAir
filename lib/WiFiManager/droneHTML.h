@@ -1,7 +1,8 @@
-#ifndef WC_AP_HTML
-#define WC_AP_HTML
+#ifndef WC_DRONE_HTML
+#define WC_DRONE_HTML
+
 ///< Define to stop re-inclusion
-const char AP_HTTP_HEAD[] PROGMEM            =
+const char HTTP_HEADER[] PROGMEM  =
 "<!DOCTYPE html>"
 "<html lang='en'>"
     "<head>"
@@ -10,9 +11,9 @@ const char AP_HTTP_HEAD[] PROGMEM            =
         "<link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />"
         "<link rel='stylesheet' href='/style.css' />";
 /** Scripts for our page */
-const char AP_HTTP_SCRIPT[] PROGMEM          = "<script>function c(l){document.getElementById('s').value=l.innerText||l.textContent;document.getElementById('p').focus();}</script>";
+const char HTTP_SCRIPT[] PROGMEM          = "<script>function c(l){document.getElementById('s').value=l.innerText||l.textContent;document.getElementById('p').focus();}</script>";
 /** End of the header section and beginning of the body */
-const char AP_HTTP_HEAD_END[] PROGMEM        = "</head>"
+const char HTTP_HEADER_END[] PROGMEM        = "</head>"
 "    <body>"
 "    <div id='bodyWrapper' class='container_24'>"
 "      <div id='header' class='grid_24'>"
@@ -40,7 +41,7 @@ const char AP_HTTP_HEAD_END[] PROGMEM        = "</head>"
 const char MAN_HTTP_HEAD_TABLE[] PROGMEM        = 
 "<div class='ui-widget-content infoBoxContents' style='text-align: left;'>Enter the details of WiFi network you want the device to connect to.</div>";
 
-const char AP_HTTP_HEAD_TABLE[] PROGMEM        = 
+const char HTTP_HEAD_TABLE[] PROGMEM        = 
 "<div class='ui-widget-content infoBoxContents' style='text-align: left;'>Select the WiFi network you want the device to connect to.</div>"
 "  <div class='ui-widget-header ui-corner-top infoBoxHeading'>"
 "    <table border='0' width='100%' cellspacing='0' cellpadding='2' class='productListingHeader'>"
@@ -59,7 +60,7 @@ const char AP_HTTP_HEAD_TABLE[] PROGMEM        =
 "    <tbody>";
 
 /** Start of our HTMl configuration Form */
-const char AP_HTTP_PORTAL_OPTIONS[] PROGMEM  = 
+const char HTTP_PORTAL_OPTIONS[] PROGMEM  = 
 "<div class='ui-widget-content infoBoxContents' style='text-align: left;'>Connect this device to a WiFi network. Select the option to find a WiFi network</div>"
 "<form class='main-form' action='/wifi' method='get'>"
     "<label class='field-wrap'>"
@@ -74,12 +75,12 @@ const char AP_HTTP_PORTAL_OPTIONS[] PROGMEM  =
     "</form>";
 
 
-const char AP_HTTP_STYLE[] PROGMEM            = "";
-const char AP_HTTP_FORM_PARAM[] PROGMEM            = "";
+const char HTTP_STYLE[] PROGMEM            = "";
+const char HTTP_FORM_PARAM[] PROGMEM            = "";
 
 
 /** HTML snippet for wifi scanning */
-const char AP_HTTP_ITEM[] PROGMEM            = 
+const char HTTP_ITEM[] PROGMEM            = 
     "<tr>"
     "    <td align='left'> "
     "          <a href='#p' onclick='c(this)' class='a-button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-primary ui-priority-primary' role='button' aria-disabled='false'>"
@@ -93,7 +94,7 @@ const char AP_HTTP_ITEM[] PROGMEM            =
     "</tr>"; 
     
 /** HTML form for saving wifi connection details */
-const char AP_HTTP_FORM_START[] PROGMEM      =
+const char HTTP_FORM_START[] PROGMEM      =
 "    </tbody>"    
 "    </table>"
 "    </div>"
@@ -116,7 +117,7 @@ const char AP_HTTP_FORM_START[] PROGMEM      =
 
 
 /** The end of our HTML Form */
-const char AP_HTTP_FORM_END[] PROGMEM        = 
+const char HTTP_FORM_END[] PROGMEM        = 
      "&nbsp;"
      "<label class='field-wrap'>"
      "    <button class='a-button ui-widget ui-state-default ui-corner-all ui-priority-primary' type='submit'>"
@@ -125,7 +126,7 @@ const char AP_HTTP_FORM_END[] PROGMEM        =
      " </label>";
 
 /** HTML snippet to recan for networks */
-const char AP_HTTP_SCAN_LINK[] PROGMEM       = 
+const char HTTP_SCAN_LINK[] PROGMEM       = 
  "<br />&nbsp;"
     "<label class='field-wrap'>"
     "    <a href='/wifi' class='a-button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-primary ui-priority-secondary' role='button' aria-disabled='false'>"
@@ -136,7 +137,7 @@ const char AP_HTTP_SCAN_LINK[] PROGMEM       =
     "<br />";
 
 
-const char AP_HTTP_SAVED[] PROGMEM           = 
+const char HTTP_SAVED[] PROGMEM           = 
 "<div class='ui-widget-content infoBoxContents' style='text-align: left;'>Credentials Saved.<br />"
 "Attempting to connect to  WiFi network. Please wait.... <br /></div>"
 "<script type=\"text/javascript\">function doPing(){attempt_count>20&&(window.clearInterval(myPinger),"
@@ -150,7 +151,7 @@ const char AP_HTTP_SAVED[] PROGMEM           =
 "<a href=\"/\"><span class='retry_icon'>&nbsp</span>Click here</a> to try again.</div></div>";
 
 /** End of the HTML page */
-const char AP_HTTP_END[] PROGMEM             = "</form></div></div></div></div></div></body></html>";
+const char HTTP_END[] PROGMEM             = "</form></div></div></div></div></div></body></html>";
 /** HTML snippet for our custom parameters portal form */
 
 const char AP_HTTP_SAVED_FULL[] PROGMEM           = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1, user-scalable=no\"/><title>{v}</title><script>function c(l){document.getElementById('s').value=l.innerText||l.textContent;document.getElementById('p').focus();}</script><style type=\"text/css\">h1 { font-weight: normal; } .msgbox { font-size:1.2rem; line-height: 1.8em; padding: 0.5em; background-color: #ddffff; border-left: 6px solid #ccc; margin-bottom:1em; } .c{text-align:center}div,input{padding:5px;font-size:1em}input{width:95%;margin-top:5px;margin-bottom:10px}body{text-align:center;font-family:verdana;}button{border:0;border-radius:.3rem;background-color:#1fa3ec;color:#fff;line-height:2.6rem;font-size:1.2rem;width:100%}.q{float:right;width:64px;text-align:right}.l{background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAALVBMVEX///8EBwfBwsLw8PAzNjaCg4NTVVUjJiZDRUUUFxdiZGSho6OSk5Pg4eFydHTCjaf3AAAAZElEQVQ4je2NSw7AIAhEBamKn97/uMXEGBvozkWb9C2Zx4xzWykBhFAeYp9gkLyZE0zIMno9n4g19hmdY39scwqVkOXaxph0ZCXQcqxSpgQpONa59wkRDOL93eAXvimwlbPbwwVAegLS1HGfZAAAAABJRU5ErkJggg==) no-repeat left center;background-size:1em;}.cfail,.cok{text-align:center; font-size:1.2rem; line-height: 2em; margin-top: 1em; padding: 0.7em; display:none;} .cfail{color: #FFFFFF;background-color: #ff8433;} .cok{ background-color: #6aff33;}</style></head><body><div style='text-align:left;display:inline-block;min-width:260px;'><div>Credentials Saved.<br />Attempting to connect to  WiFi network. Please wait.... <br /><script type=\"text/javascript\">function doPing(){attempt_count>20&&(window.clearInterval(myPinger),document.getElementById(\"conn_ok\").style.display=\"block\");var t=new XMLHttpRequest;t.onload=function(){console.log(this.responseText),document.getElementById(\"conn_fail\").style.display=\"block\",window.clearInterval(myPinger)},t.ontimeout=function(t){console.log(\"Timeout Counter is: \"+timeout_count++)},t.open(\"GET\",\"/foo\"),t.timeout=1e3,t.send(null),console.log(\"Ping counter is: \"+attempt_count++)}attempt_count=0,timeout_count=0;var myPinger=window.setInterval(doPing,3e3);</script><div class=\"cok\" id=\"conn_ok\">Connected to {ap} !<br />You may now close this window.<br /></div><div class=\"cfail\" id=\"conn_fail\">Failed to connect to {ap}!<br /><a href=\"/\">Click here</a> to try again.</div></div></div></body></html>";

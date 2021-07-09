@@ -21,17 +21,21 @@ devicePrivateKey = deviceName + "_private.pem"
 devicePrivateKeyDer = deviceName + "_private.der"
 devicePrivateKeyCsr = deviceName + "_private.csr"
 devicePublicKey = deviceName + "_public.pem"
+deviceQRFilePath = deviceName + "_qr.png"
 
 privateKeyFilePath = "device_LitttleFS/data/private-key.der"
 publicKeyFilePath = "device_LitttleFS/data/public-key.pem"
 qRFilePath = "device_LitttleFS/data/qr.png"
 
 def areKeyFilesSame():
-    checkPublic = filecmp.cmp(publicKeyFilePath, homeDir + "/.ssh/droneKeys/" + devicePublicKey)
-    checkPrivate = filecmp.cmp(privateKeyFilePath, homeDir + "/.ssh/droneKeys/" + devicePrivateKeyDer)
-    if(checkPublic and  checkPrivate):
-        return True
-    else:
+    try:
+        checkPublic = filecmp.cmp(publicKeyFilePath, homeDir + "/.ssh/droneKeys/" + devicePublicKey)
+        checkPrivate = filecmp.cmp(privateKeyFilePath, homeDir + "/.ssh/droneKeys/" + devicePrivateKeyDer)
+        if(checkPublic and  checkPrivate):
+            return True
+        else:
+            return False
+    except:
         return False
     
 def setProject():
@@ -39,18 +43,21 @@ def setProject():
     os.system(cmd)
 
 def removeDevice():
-    print("Remove device from Google IOT")
-    cmd = homeDir + "/google-cloud-sdk/bin/gcloud iot devices delete " + deviceName +" --region="+droneRegion+"  --registry="+droneRegistry+" -q"
-    os.system(cmd)
-    print("Remove keys")
-    cmd = "rm " + homeDir + "/.ssh/droneKeys/" + deviceName + "*"
-    os.system(cmd)
-    cmd = "rm " + privateKeyFilePath 
-    os.system(cmd)
-    cmd = "rm " + publicKeyFilePath
-    os.system(cmd)
-    cmd = "rm " + qRFilePath
-    os.system(cmd)
+    try:
+       print("Remove device from Google IOT")
+       cmd = homeDir + "/google-cloud-sdk/bin/gcloud iot devices delete " + deviceName +" --region="+droneRegion+"  --registry="+droneRegistry+" -q"
+       os.system(cmd)
+       print("Remove keys")
+       cmd = "rm " + homeDir + "/.ssh/droneKeys/" + deviceName + "*"
+       os.system(cmd)
+       cmd = "rm " + privateKeyFilePath 
+       os.system(cmd)
+       cmd = "rm " + publicKeyFilePath
+       os.system(cmd)
+       cmd = "rm " + qRFilePath
+       os.system(cmd)
+    except:
+        print("Remove Except")
 
 def testIfDeviceExists():
     cmd = homeDir + "/google-cloud-sdk/bin/gcloud iot devices credentials describe --region="+droneRegion+"  --registry="+droneRegistry + " --device " + deviceName +" 0"
@@ -106,8 +113,10 @@ def createDevice():
     url += "\",\"type\":\"" + namePrefix
     url += "\",\"public_key\":\"" + key + "\"}"
     urllib.request.urlretrieve(url,  qRFilePath )
+    cmd = "cp " + qRFilePath + " ~/.ssh/droneKeys/" + deviceQRFilePath
+    os.system(cmd)
+   
 
 setProject()
 if(testIfDeviceExists()):
     createDevice()
-print(deviceName)

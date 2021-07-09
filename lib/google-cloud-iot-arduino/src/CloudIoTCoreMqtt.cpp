@@ -92,7 +92,14 @@ void CloudIoTCoreMqtt::mqttConnect(bool skip) {
     }
   }
 
+  Serial.println("getConfigTopic...");
+  Serial.println(device->getConfigTopic());
+
+  Serial.println("getCommandsTopic...");
+  Serial.println(device->getCommandsTopic());
+
   // Set QoS to 1 (ack) for configuration messages
+  //this->mqttClient->subscribe(device->getConfigTopic(), 0);
   this->mqttClient->subscribe(device->getConfigTopic(), 1);
   // QoS 0 (no ack) for commands
   this->mqttClient->subscribe(device->getCommandsTopic(), 0);
@@ -194,14 +201,17 @@ bool CloudIoTCoreMqtt::publishTelemetry(const String &subtopic, const char* data
 
 // Helper that just sends default sensor
 bool CloudIoTCoreMqtt::publishState(const String &data) {
+  Serial.println(device->getStateTopic());
   return this->mqttClient->publish(device->getStateTopic(), data);
 }
 
 bool CloudIoTCoreMqtt::publishState(const char* data) {
+  Serial.println(device->getStateTopic());
   return this->mqttClient->publish(device->getStateTopic().c_str(), data);
 }
 
 bool CloudIoTCoreMqtt::publishState(const char* data, int length) {
+  Serial.println(device->getStateTopic());
   return this->mqttClient->publish(device->getStateTopic().c_str(), data, length);
 }
 

@@ -57,7 +57,11 @@ void processState()
 {
       String data = sensors->deviceStatePayload();
       Serial.print(F("Sending Droneponics state data to goolge ... "));
+      Serial.println(data);
       Serial.println(mqtt->publishState(data.substring(0,482)) ? "Success!" : "Failed!");
+      delay(5);
+      Serial.println(publishTelemetry(String(stateTopic), data ) ? "Success!" : "Failed!");
+
 }
 void processBoot()
 {
@@ -67,8 +71,9 @@ void processBoot()
   }
 
   Serial.print(F("Sending Droneponics boot data to goolge ... "));
-  Serial.println(publishTelemetry(String(deviceBootTopic), String(sensors->bootPayload(String(timeClient.getEpochTime())))) ? "Success!" : "Failed!");
-
+  //Serial.println(publishTelemetry(String(deviceBootTopic), String(sensors->bootPayload(String(timeClient.getEpochTime())))) ? "Success!" : "Failed!");
+  Serial.println(publishTelemetry(String(onlineStateTopic), "{\"eventType\":\"CONNECT\"}" ) ? "Success!" : "Failed!");
+  
 
 
 }
@@ -84,12 +89,13 @@ void processSensor (){
     bool returnCode = mqtt->publishTelemetry(sensorReadingTopic, payload);
   
     Serial.print(F("Sending telemetry sensor topic: "));
-    Serial.println(returnCode ? "Success!" : "Failed!");
+    Serial.println(returnCode ? "Success!" : "Failed!"); 
+
     if(!returnCode){
       Serial.print(F("Payload was : "));
       Serial.println(payload);
     }
- 
+
 }
 
 void messageReceivedAdvanced(MQTTClient *client, char topic[], char bytes[], int length){
@@ -148,12 +154,12 @@ static void setupCertAndPrivateKey()
     return;
   }
 
-  readDerCert("/gtsltsr.crt"); // primary_ca.pem
-  readDerCert("/GSR4.crt"); // backup_ca.pem
+  readDerCert("/data/gtsltsr.crt"); // primary_ca.pem
+  readDerCert("/data/GSR4.crt"); // backup_ca.pem
   netClient.setTrustAnchors(&certList);
 
 
-  File f = LittleFS.open("/private-key.der", "r");
+  File f = LittleFS.open("/data/private-key.der", "r");
   if (f) {
     size_t size = f.size();
     uint8_t data[size];

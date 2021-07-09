@@ -1,5 +1,5 @@
 
-#include <DroneWiFiConnect.h>
+#include <WiFiManager.h>
 #include <ArduinoJson.h>
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
@@ -8,37 +8,10 @@
 #include <CloudIoTCore.h>
 #include "droneGoogle.h"
 
-WiFiConnect wc;
-
+WiFiManager wifiManager;
 // For internet connection
 WiFiClient client;
 HTTPClient http;
-
-void configModeCallback(WiFiConnect *mWiFiConnect) {
-  Serial.println(F("Entering Access Point"));
-}
-
-
-void startWiFi(boolean showParams = false) {
-
-  wc.setDebug(true);
-
-  /* Set our callbacks */
-  wc.setAPCallback(configModeCallback);
-
-  //wc.resetSettings(); //helper to remove the stored wifi connection, comment out after first upload and re upload
-
-  /*
-     AP_NONE = Continue executing code
-     AP_LOOP = Trap in a continuous loop - Device is useless
-     AP_RESET = Restart the chip
-     AP_WAIT  = Trap in a continuous loop with captive portal until we have a working WiFi connection
-  */
-  if (!wc.autoConnect()) { // try to connect to wifi
-    /* We could also use button etc. to trigger the portal on demand within main loop */
-    wc.startConfigurationPortal(AP_WAIT);//if not connected show the configuration portal
-  }
-}
 
 /* 
  * Check if needs to update the device and returns the download url.
@@ -52,6 +25,9 @@ String getDownloadUrl()
   url += String("?version=") + CURRENT_VERSION;
   url += String("&variant=") + device_type;
   http.begin(client, url);
+
+USE_SERIAL.print("CLOUD_FUNCTION_URL = ");
+USE_SERIAL.println(url);
 
   USE_SERIAL.print("[HTTP] GET...\n");
   // start connection and send HTTP header
@@ -70,6 +46,9 @@ String getDownloadUrl()
       USE_SERIAL.println(payload);
       downloadUrl = payload;
     } else {
+      String payload = http.getString();
+      USE_SERIAL.println(payload);
+
       USE_SERIAL.println("Device is up to date!");
     }
   }
@@ -182,9 +161,13 @@ void setup()
     Serial.println(F("An Error has occurred while mounting SPIFFS"));
     return;
   }
+  
 
-  wc.setDeviceId(device_id);
-  startWiFi();
+  
+
+//wifiManager.setAPStaticIPConfig(IPAddress(4,20,4,20), IPAddress(4,20,4,20), IPAddress(255,255,255,0));
+wifiManager.autoConnect(device_id);
+
  
   if (WiFi.status() == WL_CONNECTED) {
     timeClient.begin();
@@ -214,10 +197,11 @@ void setup()
 
 
 void loop() {
+  
  
   // Wifi Dies? Start Portal Again
   if (WiFi.status() != WL_CONNECTED) {
-    if (!wc.autoConnect()) wc.startConfigurationPortal(AP_WAIT);
+    wifiManager.autoConnect(device_id);
   }
   else
   {
@@ -227,6 +211,7 @@ void loop() {
     }
 
     if (justBoot) {
+      
       sensors->DroneSensor_debug ? Serial.println(F("Debuggind On")) : Serial.println(F("Debuggind Off"));
       processBoot();
       processState();

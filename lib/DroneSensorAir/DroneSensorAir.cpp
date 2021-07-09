@@ -18,11 +18,23 @@ DroneSensorAir::DroneSensorAir(String __deviceMAC, String __deviceIP, String __d
   this->bme280.parameter.tempOversampling = 0b101;
   this->bme280.parameter.pressOversampling = 0b101; 
   this->bme280.parameter.pressureSeaLevel = 1013.25;
-  this->bme280.parameter.tempOutsideCelsius = this->_FallbackTemp;   
+  this->bme280.parameter.tempOutsideCelsius = this->_FallbackTemp;  
+  if (this->bme280.init_BME280() != 0x60)  
+  {        
+    Serial.println(F("Ops! BME280 could not be found!"));
+    //while(1);
+  }
+  else
+  {
+    Serial.println(F("BME280 detected!"));
+  } 
 }
 
 String DroneSensorAir::sensorPayload(String _EpochTime)
 {
+
+
+
   if (DroneSensor_debug) { Serial.println(F("DroneSensor::sensorPayload()"));  }
   StaticJsonDocument<DOC_SIZE> doc;
      

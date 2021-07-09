@@ -466,6 +466,8 @@ bool MQTTClient::connected() {
 }
 
 bool MQTTClient::disconnect() {
+
+  Serial.println("disconnectdisconnectdisconnectdisconnectdisconnect");
   // return immediately if not connected anymore
   if (!this->connected()) {
     return false;
