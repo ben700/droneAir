@@ -149,8 +149,8 @@ void WiFiManager::setupConfigPortal() {
 
   /* Setup web pages: root, wifi config pages, SO captive portal detectors and not found. */
   server->on(String(F("/")).c_str(), std::bind(&WiFiManager::handleRoot, this));
-  server->on(String(F("/wifi")).c_str(), std::bind(&WiFiManager::handleWifi, this, true));
-  server->on(String(F("/0wifi")).c_str(), std::bind(&WiFiManager::handleWifi, this, false));
+  server->on(String(F("/autoWifi")).c_str(), std::bind(&WiFiManager::handleWifi, this, true));
+  server->on(String(F("/manWifi")).c_str(), std::bind(&WiFiManager::handleWifi, this, false));
   server->on(String(F("/wifisave")).c_str(), std::bind(&WiFiManager::handleWifiSave, this));
   server->on(String(F("/i")).c_str(), std::bind(&WiFiManager::handleInfo, this));
   server->on(String(F("/r")).c_str(), std::bind(&WiFiManager::handleReset, this));
@@ -158,12 +158,17 @@ void WiFiManager::setupConfigPortal() {
   server->on(String(F("/fwlink")).c_str(), std::bind(&WiFiManager::handleRoot, this));  //Microsoft captive portal. Maybe not needed. Might be handled by notFound handler.
   server->onNotFound (std::bind(&WiFiManager::handleNotFound, this));
    server->serveStatic("/favicon.ico", LittleFS , "/data/favicon.ico");
+   server->serveStatic("/logo.jpeg", LittleFS , "/data/logo.jpeg");
+
+   server->serveStatic("/wifi_lock_black_24dp.svg", LittleFS , "/data/wifi_lock_black_24dp.svg");
+   server->serveStatic("/lock_open_black_24dp.svg", LittleFS , "/data/lock_open_black_24dp.svg");
+server->serveStatic("/wifi_black_24dp.svg", LittleFS , "/data/wifi_black_24dp.svg");
+server->serveStatic("/keyboard_black_24dp.svg", LittleFS , "/data/keyboard_black_24dp.svg");
+server->serveStatic("/save_black_24dp.svg", LittleFS , "/data/save_black_24dp.svg");
+
     server->serveStatic("/style.css", LittleFS , "/data/style.css"); 
     server->serveStatic("/store_logo.png", LittleFS , "/data/store_logo.png"); 
-    server->serveStatic("/bgGloss.png", LittleFS , "/data/bgGloss.png"); 
-    server->serveStatic("/bgGlass.png", LittleFS , "/data/bgGlass.png"); 
     server->serveStatic("/qr.png", LittleFS , "/data/qr.png"); 
-       server->serveStatic("/q.png", LittleFS , "/qr.png"); 
   server->begin(); // Web server start
   DEBUG_WM(F("HTTP server started"));
     LittleFS.end();
@@ -561,9 +566,9 @@ void WiFiManager::handleWifi(boolean scan) {
           item.replace("{v}", WiFi.SSID(indices[i]));
           item.replace("{r}", rssiQ);
           if (WiFi.encryptionType(indices[i]) != ENC_TYPE_NONE) {
-            item.replace("{i}", "l");
+            item.replace("{i}", "Locked");
           } else {
-            item.replace("{i}", "");
+            item.replace("{i}", "Unlocked");
           }
           //DEBUG_WM(item);
           page += item;
@@ -575,6 +580,7 @@ void WiFiManager::handleWifi(boolean scan) {
       }
       page += "<br/>";
     }
+    page += FPSTR(HTTP_END_AUTO_TABLE);
   }
 
   page += FPSTR(HTTP_FORM_START);
