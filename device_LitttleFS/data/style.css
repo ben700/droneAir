@@ -1,5 +1,24 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Merriweather+Sans&family=Open+Sans&family=Public+Sans:wght@1..900&display=swap');
+
+
+@font-face {
+  font-family: "Open+Sans";
+  src: url("/fonts/OpenSans-Regular.ttf") format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Merriweather+Sans";
+  src: url("/fonts/MerriweatherSans.ttf") format('truetype');
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Public+Sans";
+  src: url("/fonts/PublicSans-VariableFont_wght.ttf") format('truetype');
+  font-style: normal;
+}
 
 body{
     font-family: 'Open Sans', sans-serif;
@@ -41,6 +60,16 @@ h1{
     width: 40vw;
 }
 
+h2{
+  font-family: 'Merriweather Sans', sans-serif;
+ font-size: 2vw;
+font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  width: 40vw;
+  vertical-align: middle;
+}
+
 .Locked{
     font-family: 'Merriweather Sans', sans-serif;
    font-size: 3vw;
@@ -49,6 +78,7 @@ h1{
     font-variant: normal;
     background-image: url(wifi_lock_black_24dp.svg);
     background-repeat: no-repeat;
+    vertical-align: middle;
 }
 
 .Unlocked{
@@ -59,6 +89,7 @@ h1{
     font-variant: normal;
     background-image: url(lock_open_black_24dp.svg);
     background-repeat: no-repeat;
+    vertical-align: middle;
 }
 
 
@@ -101,7 +132,43 @@ transition-duration: 0.4s;
         border-radius: 12px;
      box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
 transition-duration: 0.4s;
+}
 
+.linkSave{
+  background: url(save_black_24dp.svg);
+  background-repeat: no-repeat;
+  background-color: green; /* Green */
+  background-position: left;
+  background-size: 3vw;
+  width: 45vw;
+  border: none;
+  color: white;
+  padding: 15px 0px;
+  text-align: right;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 2vw;
+  font-weight: 900;
+        border-radius: 12px;
+     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+transition-duration: 0.4s;
+}
+
+.linkSave.strong{
+  background-color: green;
+}
+.linkSave.week{
+  background-color: orange;
+}
+.linkSave.strong{
+  background-color: red;
+}
+
+.linkSave:hover {
+  background-color: white; /* Green */
+  color: black;
+  background-repeat:repeat;
+  box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
 
 }
 
@@ -161,14 +228,18 @@ span {
 }
 
 #networks {
-  font-family: Arial, Helvetica, sans-serif;
   border-collapse: collapse;
   width: 100%;
+  white-space:pre-line ;
+  line-height: 3vw;
+  vertical-align: middle;
 }
 
 #networks td, #networks th {
   border: 1px solid #ddd;
-  padding: 8px;
+   background-position: center;
+   vertical-align: bottom;
+  
 }
 
 #networks tr:nth-child(even){background-color: #f2f2f2;}
@@ -178,9 +249,9 @@ span {
 #networks th {
   padding-top: 12px;
   padding-bottom: 12px;
-  text-align: left;
   background-color: #04AA6D;
-  color: white;
+  
+
 }
 
 

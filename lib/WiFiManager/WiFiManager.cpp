@@ -157,17 +157,24 @@ void WiFiManager::setupConfigPortal() {
   //server->on("/generate_204", std::bind(&WiFiManager::handle204, this));  //Android/Chrome OS captive portal check.
   server->on(String(F("/fwlink")).c_str(), std::bind(&WiFiManager::handleRoot, this));  //Microsoft captive portal. Maybe not needed. Might be handled by notFound handler.
   server->onNotFound (std::bind(&WiFiManager::handleNotFound, this));
-   server->serveStatic("/favicon.ico", LittleFS , "/data/favicon.ico");
-   server->serveStatic("/logo.jpeg", LittleFS , "/data/logo.jpeg");
+   server->serveStatic("/favicon.ico", LittleFS , "/data/img/favicon.ico");
+   server->serveStatic("/logo.jpeg", LittleFS , "/data/img/logo.jpeg");
 
-   server->serveStatic("/wifi_lock_black_24dp.svg", LittleFS , "/data/wifi_lock_black_24dp.svg");
-   server->serveStatic("/lock_open_black_24dp.svg", LittleFS , "/data/lock_open_black_24dp.svg");
-server->serveStatic("/wifi_black_24dp.svg", LittleFS , "/data/wifi_black_24dp.svg");
-server->serveStatic("/keyboard_black_24dp.svg", LittleFS , "/data/keyboard_black_24dp.svg");
-server->serveStatic("/save_black_24dp.svg", LittleFS , "/data/save_black_24dp.svg");
+   server->serveStatic("/wifi_lock_black_24dp.svg", LittleFS , "/data/icons/wifi_lock_black_24dp.svg");
+   server->serveStatic("/lock_open_black_24dp.svg", LittleFS , "/data/icons/lock_open_black_24dp.svg");
+server->serveStatic("/wifi_black_24dp.svg", LittleFS , "/data/icons/wifi_black_24dp.svg");
+server->serveStatic("/keyboard_black_24dp.svg", LittleFS , "/data/icons/keyboard_black_24dp.svg");
+server->serveStatic("/save_black_24dp.svg", LittleFS , "/data/icons/save_black_24dp.svg");
 
+server->serveStatic("/variableFonts.js", LittleFS , "/data/scripts/variableFonts.js");
+server->serveStatic("/jquery-3.5.1.min.js", LittleFS , "/data/scripts/jquery-3.5.1.min.js");
+
+  server->serveStatic("/fonts/OpenSans-Regular.ttf", LittleFS , "/data/fonts/OpenSans-Regular.ttf"); 
+   server->serveStatic("/fonts/MerriweatherSans.ttf", LittleFS , "/data/fonts/MerriweatherSans.ttf"); 
+   server->serveStatic("/fonts/PublicSans-VariableFont_wght.ttf", LittleFS , "/data/fonts/PublicSans-VariableFont_wght.ttf"); 
+  
     server->serveStatic("/style.css", LittleFS , "/data/style.css"); 
-    server->serveStatic("/store_logo.png", LittleFS , "/data/store_logo.png"); 
+    server->serveStatic("/store_logo.png", LittleFS , "/data/img/store_logo.png"); 
     server->serveStatic("/qr.png", LittleFS , "/data/qr.png"); 
   server->begin(); // Web server start
   DEBUG_WM(F("HTTP server started"));
@@ -552,6 +559,9 @@ void WiFiManager::handleWifi(boolean scan) {
         }
       }
 
+  page += FPSTR(HTTP_HEAD_TABLE);
+
+
       //display networks in page
       for (int i = 0; i < n; i++) {
         if (indices[i] == -1) continue; // skip dups
@@ -565,12 +575,22 @@ void WiFiManager::handleWifi(boolean scan) {
           rssiQ += quality;
           item.replace("{v}", WiFi.SSID(indices[i]));
           item.replace("{r}", rssiQ);
+          
+          if (quality < 40) {
+            item.replace("{rq}", "Strong");
+          } else if (quality < 75)
+          {
+            item.replace("{rq}", "Week");
+          }else {
+            item.replace("{rq}", "Bad");
+          }
+
           if (WiFi.encryptionType(indices[i]) != ENC_TYPE_NONE) {
             item.replace("{i}", "Locked");
           } else {
             item.replace("{i}", "Unlocked");
           }
-          //DEBUG_WM(item);
+          DEBUG_WM(item);
           page += item;
           delay(0);
         } else {

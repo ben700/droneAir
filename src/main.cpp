@@ -165,7 +165,7 @@ void setup()
 
   
 
-//wifiManager.setAPStaticIPConfig(IPAddress(4,20,4,20), IPAddress(4,20,4,20), IPAddress(255,255,255,0));
+wifiManager.setAPStaticIPConfig(IPAddress(4,20,4,20), IPAddress(4,20,4,20), IPAddress(255,255,255,0));
 wifiManager.autoConnect(device_id);
 
  

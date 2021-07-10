@@ -51,18 +51,16 @@ const char HTTP_HEAD_TABLE[] PROGMEM        =
 "    <p>Select the WiFi network you want the device"
 "        to connect to.</p>"
 "    <table id='networks'>"
-"        <tbody>"
-"            <tr>"
-"                <td align='left'>"
+"            <tr id='headers'>"
+"                <th align='left'>"
 "                    WiFi Name ('SSID')"
-"                </td>"
-"                <td align='right'>"
+"                </th>"
+"                <th align='right'>"
 "                  WiFi signal strength"
-"                </td>"
+"                </th>"
 "            </tr>";
 
 const char HTTP_END_AUTO_TABLE[] PROGMEM        = 
-"        </tbody>"
 "    </table>";
 
 
@@ -95,7 +93,7 @@ const char HTTP_FORM_PARAM[] PROGMEM            = "";
 const char HTTP_ITEM[] PROGMEM            = 
 "            <tr>"
 "                <td align='left'>"
-"                    <a href='#p' onclick='c(this)' role='button' aria-disabled='false'>"
+"                    <a class='linkSave {rq}' href='#p' onclick='c(this)' role='button' aria-disabled='false'>"
 "                        {v}"
 "                    </a>"
 "                </td>"
