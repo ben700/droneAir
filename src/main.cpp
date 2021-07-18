@@ -7,6 +7,8 @@
 #include <ESP8266HTTPClient.h>
 #include <CloudIoTCore.h>
 #include "droneGoogle.h"
+#include <Wire.h>
+
 
 WiFiManager wifiManager;
 // For internet connection
@@ -174,12 +176,9 @@ wifiManager.autoConnect(device_id);
     setupCloudIoT();
   }
 
-  sensors = new DroneSensorAir(WiFi.macAddress(), WiFi.localIP().toString(), device_id, false);
- 
+  Wire.begin();
+  sensor.begin(); // reset sensor
   
-  delay(3000);
-  Serial.println("\n Starting");
-  // Setup Wifi Manager
   
   
   // Check if we need to download a new version
@@ -198,7 +197,6 @@ wifiManager.autoConnect(device_id);
 
 void loop() {
   
- 
   // Wifi Dies? Start Portal Again
   if (WiFi.status() != WL_CONNECTED) {
     wifiManager.autoConnect(device_id);
@@ -209,19 +207,11 @@ void loop() {
     {
       mqtt->mqttConnect();
     }
-
-    if (justBoot) {
-      
-      sensors->DroneSensor_debug ? Serial.println(F("Debuggind On")) : Serial.println(F("Debuggind Off"));
-      processBoot();
-      processState();
-      justBoot = false;
-      next_step_time = millis()+ sensors->pollDelay;
-    }
-
+    delay(10); 
+  
     if (millis() >= next_step_time) {
       processSensor();
-      next_step_time = millis() + sensors->pollDelay;
+      next_step_time = millis() + 60000;
     }
   }
 }

@@ -3,10 +3,10 @@
 
 #include "Arduino.h"
 #include <Esp.h>
-#include "DroneSensorAir.h"
+#include "I2CSoilMoistureSensor.h"
 #include <NTPClient.h>
 
-#define VARIANT "droneAir"
+#define VARIANT "droneSoil"
 #define USE_SERIAL Serial
 #define CURRENT_VERSION VERSION
 #define CLOUD_FUNCTION_URL "http://europe-west2-drone-302200.cloudfunctions.net/getFirmwareDownloadUrl"
@@ -36,7 +36,8 @@ const char* stateTopic = "/deviceStateTopic";
 const char* deviceBootTopic = "/deviceBoot";
 const char* sensorReadingTopic = "/sensorReading";
 
-DroneSensorAir *sensors;
+I2CSoilMoistureSensor sensor;
+
 bool justBoot = true;
 uint32_t next_step_time = 0;
 

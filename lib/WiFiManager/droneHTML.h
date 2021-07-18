@@ -18,9 +18,9 @@ const char HTTP_SCRIPT[] PROGMEM          = "<script>function c(l){document.getE
 const char HTTP_HEADER_END[] PROGMEM        = 
 "</head>"
 "<body>"
-"    <img class='image' src='/store_logo.png' alt='Droneponics' title='Droneponics'>"
+"    <a href='/'><img class='image' src='/store_logo.png' alt='Droneponics' title='Droneponics'></a>"
 "    <br>"
-"    <td class='noWrapDiv'>"
+"    <td class='noWrapDiv'><div>"
 "        <span style='animation-delay: 0s;'>D</span>"
 "        <span style='animation-delay: 0.111111s;'>e</span>"
 "        <span style='animation-delay: 0.222222s;'>v</span>"
@@ -41,7 +41,7 @@ const char HTTP_HEADER_END[] PROGMEM        =
 "        <span style='animation-delay: 2.55556s;'>e</span>"
 "        <span style='animation-delay: 2.66667s;'>r</span>"
 "        <span style='animation-delay: 2.88889s;'>!</span>"
-"    </td>";
+"   </div></td>";
 
 const char MAN_HTTP_HEAD_TABLE[] PROGMEM        = 
 "    <br><p>Enter the details of WiFi network you want the device to connect to.</p>";

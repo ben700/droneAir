@@ -1,4 +1,4 @@
-namePrefix="droneAir"
+namePrefix="droneSoil"
 gcloudProject = "drone-302200"
 droneRegion="europe-west1"
 droneRegistry="droneDeviceProduction"

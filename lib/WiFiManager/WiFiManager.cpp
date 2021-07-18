@@ -169,9 +169,8 @@ server->serveStatic("/save_black_24dp.svg", LittleFS , "/data/icons/save_black_2
 server->serveStatic("/variableFonts.js", LittleFS , "/data/scripts/variableFonts.js");
 server->serveStatic("/jquery-3.5.1.min.js", LittleFS , "/data/scripts/jquery-3.5.1.min.js");
 
-  server->serveStatic("/fonts/OpenSans-Regular.ttf", LittleFS , "/data/fonts/OpenSans-Regular.ttf"); 
+  server->serveStatic("/fonts/Poppins-Regular.ttf", LittleFS , "/data/fonts/Poppins-Regular.ttf"); 
    server->serveStatic("/fonts/MerriweatherSans.ttf", LittleFS , "/data/fonts/MerriweatherSans.ttf"); 
-   server->serveStatic("/fonts/PublicSans-VariableFont_wght.ttf", LittleFS , "/data/fonts/PublicSans-VariableFont_wght.ttf"); 
   
     server->serveStatic("/style.css", LittleFS , "/data/style.css"); 
     server->serveStatic("/store_logo.png", LittleFS , "/data/img/store_logo.png"); 

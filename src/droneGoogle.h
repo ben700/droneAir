@@ -7,7 +7,7 @@
 #include <MQTT.h>
 #include <CloudIoTCore.h>
 #include <CloudIoTCoreMqtt.h>
-
+#define DOC_SIZE 1000
 
 #include "droneConfig.h"
 #include <ArduinoJson.h>
@@ -55,45 +55,55 @@ String getJwt()
 
 void processState()
 {
-      String data = sensors->deviceStatePayload();
+
+    Serial.print("I2C Soil Moisture Sensor Address: ");
+  Serial.println(sensor.getAddress(),HEX);
+  Serial.print("Sensor Firmware version: ");
+  Serial.println(sensor.getVersion(),HEX);
+
+      StaticJsonDocument<DOC_SIZE> doc;
+      doc["Middleware"] = CURRENT_VERSION;
+      doc["Address"] = sensor.getAddress();
+      doc["Firmware"] = sensor.getVersion();
+
+      serializeJsonPretty(doc, Serial);
+      
+      String data;
+      serializeJson(doc, data);
+ 
       Serial.print(F("Sending Droneponics state data to goolge ... "));
       Serial.println(data);
-      Serial.println(mqtt->publishState(data.substring(0,482)) ? "Success!" : "Failed!");
-      delay(5);
-      Serial.println(publishTelemetry(String(stateTopic), data ) ? "Success!" : "Failed!");
-
-}
-void processBoot()
-{
-
-  while (!timeClient.update()) {
-    timeClient.forceUpdate();
-  }
-
-  Serial.print(F("Sending Droneponics boot data to goolge ... "));
-  //Serial.println(publishTelemetry(String(deviceBootTopic), String(sensors->bootPayload(String(timeClient.getEpochTime())))) ? "Success!" : "Failed!");
-  Serial.println(publishTelemetry(String(onlineStateTopic), "{\"eventType\":\"CONNECT\"}" ) ? "Success!" : "Failed!");
-  
-
-
+      Serial.println(mqtt->publishState(data) ? "Success!" : "Failed!");
+ 
 }
 
 void processSensor (){
-  if(!sensors->loggingData) { return;}
   
    while (!timeClient.update()) {
       timeClient.forceUpdate();
    }
- 
-    String payload = sensors->sensorPayload(String(timeClient.getEpochTime()));
-    bool returnCode = mqtt->publishTelemetry(sensorReadingTopic, payload);
+
+      StaticJsonDocument<DOC_SIZE> doc;
+      doc["deviceTime"] = String(timeClient.getEpochTime());
+      doc["deviceMAC"] = WiFi.macAddress();
   
+      doc["capacitance"] = sensor.getCapacitance();
+      doc["rootTemp"] = (sensor.getTemperature()/(float)10);
+      doc["rootLight"] = sensor.getLight(true);
+
+      sensor.sleep();
+      serializeJsonPretty(doc, Serial);
+      
+      String payload;
+      serializeJson(doc, payload);
+ 
+    bool returnCode = mqtt->publishTelemetry(sensorReadingTopic, payload);
     Serial.print(F("Sending telemetry sensor topic: "));
     Serial.println(returnCode ? "Success!" : "Failed!"); 
 
     if(!returnCode){
       Serial.print(F("Payload was : "));
-      Serial.println(payload);
+   //   Serial.println(payload);
     }
 
 }
@@ -111,13 +121,13 @@ void messageReceivedAdvanced(MQTTClient *client, char topic[], char bytes[], int
      Serial.println(F("Failed to read file, using default configuration"));
 
   if(String(topic).indexOf("command") > 0){
-    bool return_code = sensors->processCommand(doc);
-    if(return_code) processState();
+  //  bool return_code = sensors->processCommand(doc);
+  //  if(return_code) processState();
   }
 
   if(String(topic).indexOf("config") > 0){
-    bool return_code = sensors->processConfig(doc);
-    if(return_code) processSensor();
+ //   bool return_code = sensors->processConfig(doc);
+ //   if(return_code) processSensor();
   }
   
 }

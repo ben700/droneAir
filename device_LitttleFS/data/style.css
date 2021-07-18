@@ -1,10 +1,6 @@
-
-
-
 @font-face {
-  font-family: "Open+Sans";
-  src: url("/fonts/OpenSans-Regular.ttf") format('truetype');
-  font-weight: 400;
+  font-family: "Poppins";
+  src: url("/fonts/Poppins-Regular.ttf") format('truetype');
   font-style: normal;
 }
 
@@ -14,14 +10,8 @@
   font-style: normal;
 }
 
-@font-face {
-  font-family: "Public+Sans";
-  src: url("/fonts/PublicSans-VariableFont_wght.ttf") format('truetype');
-  font-style: normal;
-}
-
 body{
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Poppins', sans-serif;
     background-image: url("logo.jpeg");
     background-repeat: no-repeat;
     background-position:bottom right;
@@ -42,7 +32,7 @@ height: auto;
 }
 
 p{
-  font-family: 'Public Sans', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 1em;
 }
 
@@ -91,8 +81,6 @@ font-style: normal;
     background-repeat: no-repeat;
     vertical-align: middle;
 }
-
-
 
 .button{
   background-color: green; /* Green */
@@ -249,9 +237,5 @@ span {
 #networks th {
   padding-top: 12px;
   padding-bottom: 12px;
-  background-color: #04AA6D;
-  
-
+  background-color: #04AA6D;  
 }
-
-
