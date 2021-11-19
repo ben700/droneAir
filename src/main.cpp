@@ -176,10 +176,30 @@ wifiManager.autoConnect(device_id);
     setupCloudIoT();
   }
 
-  Wire.begin();
-  sensor.begin(); // reset sensor
+  bme280.parameter.I2CAddress = 0x77;                 //The BME280 is hardwired to use the I2C Address 0x77              
+  tsl2591.parameter.I2CAddress = 0x29; 
   
-  
+   Wire.begin();
+ 
+    if (bme280.init_BME280() != 0x60)  
+  {        
+    Serial.println(F("Ops! BME280 could not be found!"));
+    //while(1);
+  }
+  else
+  {
+    Serial.println(F("BME280 detected!"));
+  }
+
+  if (tsl2591.init_TSL2591() != 0x50)  
+  {        
+    Serial.println(F("Ops! TSL2591 could not be found!"));
+    //while(1);
+  }
+  else
+  {
+    Serial.println(F("TSL2591 detected!"));
+  }
   
   // Check if we need to download a new version
   String downloadUrl = getDownloadUrl();

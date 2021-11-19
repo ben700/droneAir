@@ -1,0 +1,241 @@
+@font-face {
+  font-family: "Poppins";
+  src: url("/fonts/Poppins-Regular.ttf") format('truetype');
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Merriweather+Sans";
+  src: url("/fonts/MerriweatherSans.ttf") format('truetype');
+  font-style: normal;
+}
+
+body{
+    font-family: 'Poppins', sans-serif;
+    background-image: url("logo.jpeg");
+    background-repeat: no-repeat;
+    background-position:bottom right;
+    background-size: 30vw;
+    background-blend-mode: soft-light;
+   
+}
+
+.image{
+width: 40vw;
+height: auto;
+
+}
+
+
+.input{
+  width: 40vw;
+}
+
+p{
+  font-family: 'Poppins', sans-serif;
+  font-size: 1em;
+}
+
+.error{
+     color:red 
+}
+
+
+h1{
+    font-family: 'Merriweather Sans', sans-serif;
+   font-size: 2vw;
+  font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    width: 40vw;
+}
+
+h2{
+  font-family: 'Merriweather Sans', sans-serif;
+ font-size: 2vw;
+font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  width: 40vw;
+  vertical-align: middle;
+}
+
+.Locked{
+    font-family: 'Merriweather Sans', sans-serif;
+   font-size: 3vw;
+  font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    background-image: url(wifi_lock_black_24dp.svg);
+    background-repeat: no-repeat;
+    vertical-align: middle;
+}
+
+.Unlocked{
+    font-family: 'Merriweather Sans', sans-serif;
+   font-size: 3vw;
+  font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    background-image: url(lock_open_black_24dp.svg);
+    background-repeat: no-repeat;
+    vertical-align: middle;
+}
+
+.button{
+  background-color: green; /* Green */
+  width: 40vw;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 2.5vw;
+  font-weight: 900;
+        border-radius: 12px;
+     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+transition-duration: 0.4s;
+}
+
+.buttonAuto{
+  background: url(wifi_black_24dp.svg);
+  background-repeat: space;
+  background-color: green; /* Green */
+
+}
+.linkAuto{
+  background: url(wifi_black_24dp.svg);
+  background-repeat: space;
+  background-color: green; /* Green */
+  width: 40vw;
+  border: none;
+  color: white;
+  padding: 15px 0px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 2.5vw;
+  font-weight: 900;
+        border-radius: 12px;
+     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+transition-duration: 0.4s;
+}
+
+.linkSave{
+  background: url(save_black_24dp.svg);
+  background-repeat: no-repeat;
+  background-color: green; /* Green */
+  background-position: left;
+  background-size: 3vw;
+  width: 45vw;
+  border: none;
+  color: white;
+  padding: 15px 0px;
+  text-align: right;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 2vw;
+  font-weight: 900;
+        border-radius: 12px;
+     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+transition-duration: 0.4s;
+}
+
+.linkSave.strong{
+  background-color: green;
+}
+.linkSave.week{
+  background-color: orange;
+}
+.linkSave.strong{
+  background-color: red;
+}
+
+.linkSave:hover {
+  background-color: white; /* Green */
+  color: black;
+  background-repeat:repeat;
+  box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+
+}
+
+.buttonMan{
+  background: url(keyboard_black_24dp.svg);
+  background-repeat: space;
+  background-color:orange; /* Green */
+  
+}
+
+.buttonSave{
+    background: url(save_black_24dp.svg);
+    background-repeat: space;
+    background-color: green; /* Green */
+}
+
+
+.linkAuto:hover {
+  background-color: white; /* Green */
+  color: black;
+  background-repeat:repeat;
+  box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+
+}
+
+.button:hover {
+  background-color: white; /* Green */
+  color: black;
+  background-repeat:repeat;
+  box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+
+}
+
+td.noWrapDiv {
+flex-wrap: nowrap;
+  word-wrap: break-word;
+  word-break: keep-all;
+  writing-mode: sideways-lr;
+}
+
+span {
+  opacity: unset;
+  font-size: 7.5vw;
+  animation: 10s ease-in-out variation;
+}
+
+@keyframes variation {
+  0% {
+    font-weight: 100;
+  }
+  50% {
+    font-weight: 900;
+  }
+  100% {
+    font-weight: 100;
+  }
+}
+
+#networks {
+  border-collapse: collapse;
+  width: 100%;
+  white-space:pre-line ;
+  line-height: 3vw;
+  vertical-align: middle;
+}
+
+#networks td, #networks th {
+  border: 1px solid #ddd;
+   background-position: center;
+   vertical-align: bottom;
+  
+}
+
+#networks tr:nth-child(even){background-color: #f2f2f2;}
+
+#networks tr:hover {background-color: #ddd;}
+
+#networks th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  background-color: #04AA6D;  
+}

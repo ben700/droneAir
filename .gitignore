@@ -3,7 +3,5 @@
 .vscode
 .pio
 node_modules
-
-device_LitttleFS/data/private-key.der
-device_LitttleFS/data/public-key.pem
-device_LitttleFS/data/qr.png
+.pio/libdeps/*
+device_LitttleFS/data/id/*

@@ -1,4 +1,4 @@
-namePrefix="droneSoil"
+namePrefix="droneAir"
 gcloudProject = "drone-302200"
 droneRegion="europe-west1"
 droneRegistry="droneDeviceProduction"
@@ -23,9 +23,9 @@ devicePrivateKeyCsr = deviceName + "_private.csr"
 devicePublicKey = deviceName + "_public.pem"
 deviceQRFilePath = deviceName + "_qr.png"
 
-privateKeyFilePath = "device_LitttleFS/data/private-key.der"
-publicKeyFilePath = "device_LitttleFS/data/public-key.pem"
-qRFilePath = "device_LitttleFS/data/qr.png"
+privateKeyFilePath = "device_LitttleFS/data/id/" + str(chipId) + "_private.der"
+publicKeyFilePath = "device_LitttleFS/data/id/" + str(chipId) + "_public.pem"
+qRFilePath = "device_LitttleFS/data/id/" + str(chipId) + "_qr.png"
 
 def areKeyFilesSame():
     try:

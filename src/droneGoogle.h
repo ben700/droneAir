@@ -56,16 +56,11 @@ String getJwt()
 void processState()
 {
 
-    Serial.print("I2C Soil Moisture Sensor Address: ");
-  Serial.println(sensor.getAddress(),HEX);
-  Serial.print("Sensor Firmware version: ");
-  Serial.println(sensor.getVersion(),HEX);
+  
 
       StaticJsonDocument<DOC_SIZE> doc;
       doc["Middleware"] = CURRENT_VERSION;
-      doc["Address"] = sensor.getAddress();
-      doc["Firmware"] = sensor.getVersion();
-
+   
       serializeJsonPretty(doc, Serial);
       
       String data;
@@ -87,11 +82,31 @@ void processSensor (){
       doc["deviceTime"] = String(timeClient.getEpochTime());
       doc["deviceMAC"] = WiFi.macAddress();
   
-      doc["capacitance"] = sensor.getCapacitance();
-      doc["rootTemp"] = (sensor.getTemperature()/(float)10);
-      doc["rootLight"] = sensor.getLight(true);
+     Serial.print(F("Duration in Seconds:\t\t"));
+   Serial.println(float(millis())/1000);
+ 
+   Serial.print(F("Temperature in Celsius:\t\t")); 
+   Serial.println(bme280.readTempC());
+    doc["temperature"] = bme280.readTempC();
 
-      sensor.sleep();
+   Serial.print(F("Humidity in %:\t\t\t")); 
+   Serial.println(bme280.readHumidity());
+doc["humidity"] = bme280.readHumidity();
+
+   Serial.print(F("Pressure in hPa:\t\t")); 
+   Serial.println(bme280.readPressure());
+doc["pressure"] = bme280.readPressure();
+
+   Serial.print(F("Altitude in Meters:\t\t")); 
+   Serial.println(bme280.readAltitudeMeter());
+doc["altitude"] = bme280.readAltitudeMeter();
+
+   Serial.print(F("Illuminance in Lux:\t\t")); 
+   Serial.println(tsl2591.readIlluminance_TSL2591());
+doc["lux"] = tsl2591.readIlluminance_TSL2591();
+
+ 
+   
       serializeJsonPretty(doc, Serial);
       
       String payload;
@@ -131,8 +146,23 @@ void messageReceivedAdvanced(MQTTClient *client, char topic[], char bytes[], int
   }
   
 }
+void littleFsListDir(String dirname)
+{
 
-static void readDerCert(const char *filename) {
+  Serial.println("Listing directory : " + dirname);
+  Dir root = LittleFS.openDir(dirname);
+
+  while (root.next())
+  {
+    File file = root.openFile("r");
+    Serial.print("  File: ");
+    Serial.println(root.fileName());
+    file.close();
+  }
+}
+
+static void readDerCert(String filename)
+{
   File ca = LittleFS.open(filename, "r");
   if (ca)
   {
@@ -143,14 +173,16 @@ static void readDerCert(const char *filename) {
     ca.close();
 
     Serial.print("Success to open ca file ");
+    Serial.println(filename);
   }
   else
   {
-    Serial.print("Failed to open ca file ");
+    Serial.print("Failed to open ca file:-  ");
+    Serial.println(filename);
+    Serial.println("Failed to open ca file. Security dir contents are :");
+    littleFsListDir(CAPath);
   }
-  Serial.println(filename);
 }
-
 static void setupCertAndPrivateKey()
 {
 
@@ -163,14 +195,16 @@ static void setupCertAndPrivateKey()
     Serial.println("Failed to mount file system");
     return;
   }
+   netClient.setBufferSizes(1024, 1024);
 
-  readDerCert("/data/gtsltsr.crt"); // primary_ca.pem
-  readDerCert("/data/GSR4.crt"); // backup_ca.pem
+  readDerCert(primaryCA); // primary_ca.pem
+  readDerCert(backupCA);  // backup_ca.pem
   netClient.setTrustAnchors(&certList);
 
+  File f = LittleFS.open(privateKeyPath, "r");
 
-  File f = LittleFS.open("/data/private-key.der", "r");
-  if (f) {
+  if (f)
+  {
     size_t size = f.size();
     uint8_t data[size];
     f.read(data, size);
@@ -179,11 +213,14 @@ static void setupCertAndPrivateKey()
     BearSSL::PrivateKey pk(data, size);
     device.setPrivateKey(pk.getEC()->x);
 
-    Serial.println("Success to open private-key.der");
-  } else {
-    Serial.println("Failed to open private-key.der");
+    Serial.println("Success to open " + privateKeyPath);
   }
-
+  else
+  {
+    Serial.println("Failed to open " + privateKeyPath);
+    Serial.print(" Contents of ID dir are:-");
+    littleFsListDir(idPath);
+  }
   LittleFS.end();
 }
 
