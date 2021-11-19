@@ -20,6 +20,8 @@
 #include <droneHTML.h>
 #include <LittleFS.h>
 
+
+
 extern "C" {
   #include "user_interface.h"
 }
@@ -52,6 +54,8 @@ class WiFiManagerParameter {
     WiFiManagerParameter(const char *id, const char *placeholder, const char *defaultValue, int length, const char *custom);
     ~WiFiManagerParameter();
 
+
+
     const char *getID();
     const char *getValue();
     const char *getPlaceholder();
@@ -75,6 +79,9 @@ class WiFiManager
   public:
     WiFiManager();
     ~WiFiManager();
+
+String getPassword();
+String getSSID();
 
     boolean       autoConnect();
     boolean       autoConnect(char const *apName, char const *apPassword = NULL);
@@ -182,7 +189,7 @@ class WiFiManager
     String        toStringIp(IPAddress ip);
 
     boolean       connect;
-    boolean       _debug = true;
+    boolean       _debug = false;
 
     void (*_apcallback)(WiFiManager*) = NULL;
     void (*_savecallback)(void) = NULL;

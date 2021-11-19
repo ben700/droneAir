@@ -12,7 +12,6 @@
 #include "droneConfig.h"
 #include <ArduinoJson.h>
 
-
 // Initialize WiFi and MQTT for this board
 static MQTTClient *mqttClient;
 static BearSSL::WiFiClientSecure netClient;
@@ -40,7 +39,6 @@ bool publishTelemetry(String subfolder, const char *data, int length)
   return mqtt->publishTelemetry(subfolder, data, length);
 }
 
- 
 String getJwt()
 {
   // Disable software watchdog as these operations can take a while.
@@ -52,99 +50,104 @@ String getJwt()
   return jwt;
 }
 
-
 void processState()
 {
 
-  
+  StaticJsonDocument<DOC_SIZE> doc;
+  doc["Middleware"] = CURRENT_VERSION;
 
-      StaticJsonDocument<DOC_SIZE> doc;
-      doc["Middleware"] = CURRENT_VERSION;
-   
-      serializeJsonPretty(doc, Serial);
-      
-      String data;
-      serializeJson(doc, data);
- 
-      Serial.print(F("Sending Droneponics state data to goolge ... "));
-      Serial.println(data);
-      Serial.println(mqtt->publishState(data) ? "Success!" : "Failed!");
- 
+  serializeJsonPretty(doc, Serial);
+
+  String data;
+  serializeJson(doc, data);
+
+  Serial.print(F("Sending Droneponics state data to goolge ... "));
+  Serial.println(data);
+  Serial.println(mqtt->publishState(data) ? "Success!" : "Failed!");
 }
 
-void processSensor (){
-  
-   while (!timeClient.update()) {
-      timeClient.forceUpdate();
-   }
+void processSensor()
+{
 
-      StaticJsonDocument<DOC_SIZE> doc;
-      doc["deviceTime"] = String(timeClient.getEpochTime());
-      doc["deviceMAC"] = WiFi.macAddress();
-  
-     Serial.print(F("Duration in Seconds:\t\t"));
-   Serial.println(float(millis())/1000);
- 
-   Serial.print(F("Temperature in Celsius:\t\t")); 
-   Serial.println(bme280.readTempC());
-    doc["temperature"] = bme280.readTempC();
+  while (!timeClient.update())
+  {
+    timeClient.forceUpdate();
+  }
 
-   Serial.print(F("Humidity in %:\t\t\t")); 
-   Serial.println(bme280.readHumidity());
-doc["humidity"] = bme280.readHumidity();
+  StaticJsonDocument<DOC_SIZE> doc;
+  doc["deviceTime"] = String(timeClient.getEpochTime());
+  doc["deviceMAC"] = WiFi.macAddress();
 
-   Serial.print(F("Pressure in hPa:\t\t")); 
-   Serial.println(bme280.readPressure());
-doc["pressure"] = bme280.readPressure();
+  Serial.print(F("Duration in Seconds:\t\t"));
+  Serial.println(float(millis()) / 1000);
 
-   Serial.print(F("Altitude in Meters:\t\t")); 
-   Serial.println(bme280.readAltitudeMeter());
-doc["altitude"] = bme280.readAltitudeMeter();
+  Serial.print(F("Temperature in Celsius:\t\t"));
+  Serial.println(bme280.readTempC());
+  doc["temperature"] = bme280.readTempC();
 
-   Serial.print(F("Illuminance in Lux:\t\t")); 
-   Serial.println(tsl2591.readIlluminance_TSL2591());
-doc["lux"] = tsl2591.readIlluminance_TSL2591();
+  Serial.print(F("Humidity in %:\t\t\t"));
+  Serial.println(bme280.readHumidity());
+  doc["humidity"] = bme280.readHumidity();
 
- 
-   
-      serializeJsonPretty(doc, Serial);
-      
-      String payload;
-      serializeJson(doc, payload);
- 
-    bool returnCode = mqtt->publishTelemetry(sensorReadingTopic, payload);
-    Serial.print(F("Sending telemetry sensor topic: "));
-    Serial.println(returnCode ? "Success!" : "Failed!"); 
+  Serial.print(F("Pressure in hPa:\t\t"));
+  Serial.println(bme280.readPressure());
+  doc["pressure"] = bme280.readPressure();
 
-    if(!returnCode){
-      Serial.print(F("Payload was : "));
-   //   Serial.println(payload);
-    }
+  Serial.print(F("Altitude in Meters:\t\t"));
+  Serial.println(bme280.readAltitudeMeter());
+  float altitude = bme280.readAltitudeMeter();
+  if (altitude != NULL)
+  {
+    doc["altitude"] = altitude;
+  }
 
+  Serial.print(F("Illuminance in Lux:\t\t"));
+  Serial.println(tsl2591.readIlluminance_TSL2591());
+  doc["lux"] = tsl2591.readIlluminance_TSL2591();
+
+  serializeJsonPretty(doc, Serial);
+
+  String payload;
+  serializeJson(doc, payload);
+
+  bool returnCode = mqtt->publishTelemetry(sensorReadingTopic, payload);
+  Serial.print(F("Sending telemetry sensor topic: "));
+  Serial.println(returnCode ? "Success!" : "Failed!");
+
+  if (!returnCode)
+  {
+    Serial.print(F("Payload was : "));
+    //   Serial.println(payload);
+  }
 }
 
-void messageReceivedAdvanced(MQTTClient *client, char topic[], char bytes[], int length){
-  if (length > 0){
+void messageReceivedAdvanced(MQTTClient *client, char topic[], char bytes[], int length)
+{
+  if (length > 0)
+  {
     Serial.printf("incoming: %s - %s\n", topic, bytes);
-  } else {
+  }
+  else
+  {
     Serial.printf("0\n"); // Success but no message
   }
-  
+
   StaticJsonDocument<1000> doc;
   DeserializationError error = deserializeJson(doc, bytes);
   if (error)
-     Serial.println(F("Failed to read file, using default configuration"));
+    Serial.println(F("Failed to read file, using default configuration"));
 
-  if(String(topic).indexOf("command") > 0){
-  //  bool return_code = sensors->processCommand(doc);
-  //  if(return_code) processState();
+  if (String(topic).indexOf("command") > 0)
+  {
+    //  bool return_code = sensors->processCommand(doc);
+    //  if(return_code) processState();
   }
 
-  if(String(topic).indexOf("config") > 0){
- //   bool return_code = sensors->processConfig(doc);
- //   if(return_code) processSensor();
+  if (String(topic).indexOf("config") > 0)
+  {
+    //   bool return_code = sensors->processConfig(doc);
+    //   if(return_code) processSensor();
   }
-  
 }
 void littleFsListDir(String dirname)
 {
@@ -195,7 +198,7 @@ static void setupCertAndPrivateKey()
     Serial.println("Failed to mount file system");
     return;
   }
-   netClient.setBufferSizes(1024, 1024);
+  netClient.setBufferSizes(1024, 1024);
 
   readDerCert(primaryCA); // primary_ca.pem
   readDerCert(backupCA);  // backup_ca.pem
@@ -233,7 +236,6 @@ static void setupWifi()
     delay(10);
   }
 }
-
 
 // TODO: fix globals
 void setupCloudIoT()
