@@ -104,6 +104,9 @@ void processSensor()
   Serial.print(F("Illuminance in Lux:\t\t"));
   Serial.println(tsl2591.readIlluminance_TSL2591());
   doc["lux"] = tsl2591.readIlluminance_TSL2591();
+  doc["visible"] = tsl2591.getVisibleLight_TSL2591();
+  doc["infrared"] = tsl2591.getInfrared_TSL2591();
+  doc["fullSpectrum"] = tsl2591.getFullSpectrum_TSL2591();
 
   serializeJsonPretty(doc, Serial);
 
