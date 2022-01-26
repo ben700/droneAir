@@ -8,7 +8,7 @@
 #include <CloudIoTCore.h>
 #include "droneGoogle.h"
 #include <Wire.h>
-
+#include <i2cdetect.h>
 
 WiFiManager wifiManager;
 // For internet connection
@@ -158,32 +158,7 @@ void setup()
     Serial.begin(9600);
   
  
-  bme280.parameter.I2CAddress = 0x77;                 //The BME280 is hardwired to use the I2C Address 0x77              
-  tsl2591.parameter.I2CAddress = 0x29; 
-
-
-//0b00:    Low gain mode
-   //0b01:    Medium gain mode
-   //0b10:    High gain mode
-   //0b11:    Maximum gain mode
-
-   tsl2591.parameter.gain = 0b01;
-
-   //Longer integration times also helps in very low light situations, but the measurements are slower
- 
-   //0b000:   100ms (max count = 37888)
-   //0b001:   200ms (max count = 65535)
-   //0b010:   300ms (max count = 65535)
-   //0b011:   400ms (max count = 65535)
-   //0b100:   500ms (max count = 65535)
-   //0b101:   600ms (max count = 65535)
-    
-   tsl2591.parameter.integration = 0b000;    
-
-   //The values for the gain and integration times are written transfered to the sensor through the function config_TSL2591
-   //This function powers the device ON, then configures the sensor and finally powers the device OFF again 
-       
-   tsl2591.config_TSL2591();  
+  bme280.parameter.I2CAddress = 0x76;                 //The BME280 is hardwired to use the I2C Address 0x77              
 
    
   
@@ -326,15 +301,8 @@ wifiManager.autoConnect(device_id);
     Serial.println(F("BME280 detected!"));
   }
 
-  if (tsl2591.init_TSL2591() != 0x50)  
-  {        
-    Serial.println(F("Ops! TSL2591 could not be found!"));
-    //while(1);
-  }
-  else
-  {
-    Serial.println(F("TSL2591 detected!"));
-  }
+pinMode(LIGHTSENSORPIN,  INPUT);  
+
   
   // Check if we need to download a new version
   String downloadUrl = getDownloadUrl();
@@ -350,6 +318,7 @@ wifiManager.autoConnect(device_id);
     if (bme280.init_BME280() != 0x60)  
   {        
     Serial.println(F("Ops! BME280 could not be found!"));
+      i2cdetect();  
     //while(1);
   }
   else
@@ -357,15 +326,7 @@ wifiManager.autoConnect(device_id);
     Serial.println(F("BME280 detected!"));
   }
 
-  if (tsl2591.init_TSL2591() != 0x50)  
-  {        
-    Serial.println(F("Ops! TSL2591 could not be found!"));
-    //while(1);
-  }
-  else
-  {
-    Serial.println(F("TSL2591 detected!"));
-  }
+
   
   Serial.println();
   Serial.println(); 
@@ -406,7 +367,8 @@ void loop() {
    Serial.println(bme280.readAltitudeMeter());
 
    Serial.print(F("Illuminance in Lux:\t\t")); 
-   Serial.println(tsl2591.readIlluminance_TSL2591());
+   float reading = analogRead(LIGHTSENSORPIN); //Read light level
+   Serial.println(reading);    
 
    Serial.println();
    Serial.println();

@@ -14,6 +14,7 @@
 #define DroneDevice_debug false
 #define _ChipId ESP.getChipId() 
 
+
 // Configuration for NTP
 // Define NTP Client to get time
 const char* ntp_primary = "time.google.com";
