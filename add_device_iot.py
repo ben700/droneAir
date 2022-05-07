@@ -1,25 +1,23 @@
-homeDir = "/home/benslittlebitsandbobs"
-import sys
-# after this line, esptool becomes importable
-sys.path.append(homeDir + "/esptool/")
-
-
 from esptool import ESP8266ROM, ESPLoader
 import filecmp
 import urllib.request
 import html
-
+import sys
 import os
 import subprocess
-
-namePrefix="droneAir"
+namePrefix = "droneAir"
 gcloudProject = "drone-302200"
-droneRegion="europe-west1"
-droneRegistry="droneDeviceProduction"
+droneRegion = "europe-west1"
+droneRegistry = "droneDeviceProduction"
+homeDir = "/home/benslittlebitsandbobs"
+gCloudCmd = "/usr/bin/gcloud"
 
 
+# after this line, esptool becomes importable
+sys.path.append(homeDir + "/esptool/")
 
-chipId = ESP8266ROM.chip_id(ESPLoader.detect_chip(port="/dev/ttyUSB1"))
+
+chipId = ESP8266ROM.chip_id(ESPLoader.detect_chip())
 deviceNamePostfix = str(chipId)
 deviceName = namePrefix + "_" + deviceNamePostfix
 devicePrivateKeyPem = deviceNamePostfix + "_private.pem"
@@ -53,13 +51,13 @@ def areKeyFilesSame():
 
 
 def setProject():
-    cmd = homeDir + "/google-cloud-sdk/bin/gcloud config set project " + gcloudProject
+    cmd = gCloudCmd + " config set project " + gcloudProject
     os.system(cmd)
 
 
 def removeDevice():
     print("Remove device from Google IOT")
-    cmd = homeDir + "/google-cloud-sdk/bin/gcloud iot devices delete " + \
+    cmd = gCloudCmd + " iot devices delete " + \
         deviceName + " --region="+droneRegion+"  --registry="+droneRegistry+" -q"
     os.system(cmd)
     print("Remove keys")
@@ -69,8 +67,15 @@ def removeDevice():
     os.system(cmd)
 
 
+
+def removeDeviceFiles():
+    os.system("rm "+deviceFilePath+"*.der")
+    os.system("rm "+deviceFilePath+"*.pem")
+    os.system("rm "+deviceFilePath+"*.png")
+
+
 def testIfDeviceExists():
-    cmd = homeDir + "/google-cloud-sdk/bin/gcloud iot devices credentials describe --region=" + \
+    cmd = gCloudCmd + " iot devices credentials describe --region=" + \
         droneRegion+"  --registry="+droneRegistry + " --device " + deviceName + " 0"
     p = os.popen(cmd)
     deviceExistTest = p.read()
@@ -116,9 +121,9 @@ def createDevice():
     cmd = "cp " + homeDir + "/.ssh/droneKeys/" + \
         devicePublicKeyPem + " " + publicKeyFilePath
     os.system(cmd)
-    cmd = homeDir + "/google-cloud-sdk/bin/gcloud config set project " + gcloudProject
+    cmd = gCloudCmd + " config set project " + gcloudProject
     os.system(cmd)
-    cmd = homeDir + "/google-cloud-sdk/bin/gcloud iot devices create " + deviceName + " --region=" + \
+    cmd = gCloudCmd + " iot devices create " + deviceName + " --region=" + \
         droneRegion+" --registry="+droneRegistry + \
         " --public-key path=" + publicKeyFilePath + ",type=es256"
     os.system(cmd)
@@ -140,4 +145,5 @@ def createDevice():
 
 setProject()
 if(testIfDeviceExists()):
+    removeDeviceFiles()
     createDevice()

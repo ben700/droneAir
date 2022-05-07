@@ -8,7 +8,6 @@
 #include <CloudIoTCore.h>
 #include <CloudIoTCoreMqtt.h>
 #define DOC_SIZE 1000
-#define LIGHTSENSORPIN A0 //Ambient light sensor reading 
 
 #include "droneConfig.h"
 #include <ArduinoJson.h>
@@ -55,7 +54,7 @@ void processState()
 {
 
   StaticJsonDocument<DOC_SIZE> doc;
-  doc["Middleware"] = CURRENT_VERSION;
+  doc["Middleware"] = String(VERSION);
 
   serializeJsonPretty(doc, Serial);
 
@@ -77,34 +76,27 @@ void processSensor()
 
   StaticJsonDocument<DOC_SIZE> doc;
   doc["deviceTime"] = String(timeClient.getEpochTime());
-  doc["deviceMAC"] = WiFi.macAddress();
-
-  Serial.print(F("Duration in Seconds:\t\t"));
-  Serial.println(float(millis()) / 1000);
-
-  Serial.print(F("Temperature in Celsius:\t\t"));
-  Serial.println(bme280.readTempC());
-  doc["temperature"] = bme280.readTempC();
-
-  Serial.print(F("Humidity in %:\t\t\t"));
-  Serial.println(bme280.readHumidity());
-  doc["humidity"] = bme280.readHumidity();
-
-  Serial.print(F("Pressure in hPa:\t\t"));
-  Serial.println(bme280.readPressure());
-  doc["pressure"] = bme280.readPressure();
-
-  Serial.print(F("Altitude in Meters:\t\t"));
-  Serial.println(bme280.readAltitudeMeter());
-  float altitude = bme280.readAltitudeMeter();
-  if (altitude != NULL)
-  {
-    doc["altitude"] = altitude;
-  }
-
-  Serial.print(F("Illuminance in Lux:\t\t"));
-  doc["lux"] =analogRead(LIGHTSENSORPIN);
  
+  doc["temperature"] = bme280.readTemperature();
+  doc["humidity"] = bme280.readHumidity();
+  doc["pressure"] = bme280.readPressure();
+  doc["altitude"] = bme280.readAltitude(SEALEVELPRESSURE_HPA);
+  
+
+  uint32_t lum = tsl.getFullLuminosity();
+  uint16_t ir, full;
+  ir = lum >> 16;
+  full = lum & 0xFFFF;
+  
+  doc["infrared"] = tsl.getLuminosity(1);
+  doc["visible"] =tsl.getLuminosity(2);
+  doc["fullSpectrum"] = tsl.getLuminosity(0);
+  doc["lux"] =tsl.calculateLux(full, ir);
+ 
+
+
+ doc["co2"] =co2.readCO2UART();
+doc["thermalEquilibriumTemperature"] =co2.getLastTemperature();
 
   serializeJsonPretty(doc, Serial);
 
@@ -187,18 +179,18 @@ static void readDerCert(String filename)
     littleFsListDir(CAPath);
   }
 }
-static void setupCertAndPrivateKey()
+static bool setupCertAndPrivateKey()
 {
-
-  // If using the (preferred) method with the cert and private key in /data (SPIFFS)
+  // If using the (preferred) method with the cert and private key in /data (LittleFS)
   // To get the private key run
   // openssl ec -in <private-key.pem> -outform DER -out private-key.der
 
   if (!LittleFS.begin())
   {
     Serial.println("Failed to mount file system");
-    return;
+    return false;
   }
+
   netClient.setBufferSizes(1024, 1024);
 
   readDerCert(primaryCA); // primary_ca.pem
@@ -218,14 +210,16 @@ static void setupCertAndPrivateKey()
     device.setPrivateKey(pk.getEC()->x);
 
     Serial.println("Success to open " + privateKeyPath);
+    return true;
   }
   else
   {
     Serial.println("Failed to open " + privateKeyPath);
-    Serial.print(" Contents of ID dir are:-");
-    littleFsListDir(idPath);
+    Serial.println(" Contents of ID dir are:-");
+    littleFsListDir(IDPath);
   }
   LittleFS.end();
+  return false;
 }
 
 static void setupWifi()
@@ -239,18 +233,22 @@ static void setupWifi()
 }
 
 // TODO: fix globals
-void setupCloudIoT()
+bool setupCloudIoT()
 {
   // ESP8266 WiFi setup
   setupWifi();
 
   // ESP8266 WiFi secure initialization and device private key
-  setupCertAndPrivateKey();
+  if(!setupCertAndPrivateKey())
+  {
+    return false;
+  }
 
   mqttClient = new MQTTClient(512);
   mqttClient->setOptions(180, true, 1000); // keepAlive, cleanSession, timeout
   mqtt = new CloudIoTCoreMqtt(mqttClient, &netClient, &device);
   mqtt->setUseLts(true);
   mqtt->startMQTTAdvanced(); // Opens connection using advanced callback
+  return true;
 }
 #endif
