@@ -11,19 +11,16 @@ DroneDebug::DroneDebug(String _prefix)
     this->prefix = "*" + _prefix + ": ";
 }
 
-template <typename Generic>
-void DroneDebug::DEBUG_MSG(String _prefix, Generic text)
+void DroneDebug::DEBUG_MSG(String _prefix, String text)
 {
-    String __prefix = "*" + _prefix + ": ";
     if (DEBUG)
     {
 
-        Serial.println(__prefix + text);
+        Serial.println("*" + _prefix + ": " + text);
     }
 }
 
-template <typename Generic>
-void DroneDebug::DEBUG_WM(Generic text)
+void DroneDebug::DEBUG_WM(String text)
 {
     if (DEBUG)
     {

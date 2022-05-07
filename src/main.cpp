@@ -26,6 +26,7 @@ ESP_WiFiManager ESP_wifiManager;
 DroneCloudOTA *droneCloudOTA;
 WiFiClient client;
 HTTPClient http;
+DroneDebug *droneDebug;
 
 bool _hasSensors = false;
 bool _detectReset = false;
@@ -39,15 +40,17 @@ void setup()
 
   delay(200);
 
-  Serial.println(F("Starting ConfigOnDoubleReset_Multi with DoubleResetDetect"));
-  Serial.println("Using " + String(FS_Name));
-  Serial.println("On " + String(ARDUINO_BOARD));
-  Serial.println(ESP_WIFIMANAGER_VERSION);
-  Serial.println(ESP_MULTI_RESET_DETECTOR_VERSION);
+droneDebug = new DroneDebug("droneAir");
+
+  droneDebug->DEBUG_WM(F("Starting ConfigOnDoubleReset_Multi with DoubleResetDetect"));
+  droneDebug->DEBUG_WM("Using " + String(FS_Name));
+  droneDebug->DEBUG_WM("On " + String(ARDUINO_BOARD));
+  droneDebug->DEBUG_WM(ESP_WIFIMANAGER_VERSION);
+  droneDebug->DEBUG_WM(ESP_MULTI_RESET_DETECTOR_VERSION);
 
   if (!LittleFS.begin())
   {
-    Serial.println(F("An Error has occurred while mounting LittleFS"));
+    droneDebug->DEBUG_WM(F("An Error has occurred while mounting LittleFS"));
     return;
   }
   led.flash(4, 400, 200);
@@ -81,7 +84,7 @@ void setup()
     wifiMulti.addAP(Router_SSID.c_str(), Router_Pass.c_str());
 
     ESP_wifiManager.setConfigPortalTimeout(120); // If no access point name has been previously entered disable timeout.
-    Serial.println(F("Got ESP Self-Stored Credentials. Timeout 120s for Config Portal"));
+    droneDebug->DEBUG_WM(F("Got ESP Self-Stored Credentials. Timeout 120s for Config Portal"));
   }
 
   if (loadConfigData())
@@ -89,12 +92,12 @@ void setup()
     configDataLoaded = true;
 
     ESP_wifiManager.setConfigPortalTimeout(120); // If no access point name has been previously entered disable timeout.
-    Serial.println(F("Got stored Credentials. Timeout 120s for Config Portal"));
+    droneDebug->DEBUG_WM(F("Got stored Credentials. Timeout 120s for Config Portal"));
   }
   else
   {
     // Enter CP only if no stored SSID on flash and file
-    Serial.println(F("Open Config Portal without Timeout: No stored Credentials."));
+    droneDebug->DEBUG_WM(F("Open Config Portal without Timeout: No stored Credentials."));
     initialConfig = true;
   }
 
@@ -103,7 +106,7 @@ void setup()
     // DRD, disable timeout.
     ESP_wifiManager.setConfigPortalTimeout(0);
 
-    Serial.println(F("Multi Reset Detected"));
+    droneDebug->DEBUG_WM(F("Multi Reset Detected"));
     initialConfig = true;
     _detectReset = true;
 
@@ -111,16 +114,15 @@ void setup()
   }
   else
   {
-    Serial.println(F("No Multi Reset Detected"));
-    Serial.printf("Reset need to be reset a number of times = %d\n", MRD_TIMES);
+    droneDebug->DEBUG_WM(F("No Multi Reset Detected"));
+    droneDebug->DEBUG_WM("Reset need to be reset a number of times = " +  String(MRD_TIMES));
     mrd->detectMultiReset();
-    // Serial.printf("No multiResetDetected, number of times = %d\n", (uint16_t)(mrd->multiResetDetectorFlag & 0x0000FFFF));
     led.off();
   }
 
   if (initialConfig)
   {
-    Serial.println("Starting configuration portal @ " + APStaticIP.toString());
+    droneDebug->DEBUG_WM("Starting configuration portal @ " + APStaticIP.toString());
 
     led.flash(20, 100, 100);
 
@@ -136,10 +138,10 @@ void setup()
 
     // Starts an access point
     if (!ESP_wifiManager.startConfigPortal((const char *)ssid.c_str(), (const char *)password.c_str()))
-      Serial.println(F("Not connected to WiFi but continuing anyway."));
+      droneDebug->DEBUG_WM(F("Not connected to WiFi but continuing anyway."));
     else
     {
-      Serial.println(F("WiFi connected...yeey :)"));
+      droneDebug->DEBUG_WM(F("WiFi connected...yeey :)"));
     }
 
     // Stored  for later usage, from v1.1.0, but clear first
@@ -195,21 +197,21 @@ void setup()
 
     if (WiFi.status() != WL_CONNECTED)
     {
-      Serial.println(F("WiFi not connected"));
-      Serial.println(F("ConnectMultiWiFi in setup"));
+      droneDebug->DEBUG_WM(F("WiFi not connected"));
+      droneDebug->DEBUG_WM(F("ConnectMultiWiFi in setup"));
       led.on();
       connectMultiWiFi();
     }
   }
 
-  Serial.print(F("After waiting "));
-  Serial.print((float)(millis() - startedAt) / 1000);
-  Serial.print(F(" secs more in setup(), connection result is "));
+  droneDebug->DEBUG_WM(F("After waiting "));
+  droneDebug->DEBUG_WM(String((millis() - startedAt) / 1000));
+  droneDebug->DEBUG_WM(F(" secs more in setup(), connection result is "));
 
   if (WiFi.status() == WL_CONNECTED)
   {
-    Serial.print(F("connected. Local IP: "));
-    Serial.println(WiFi.localIP());
+    droneDebug->DEBUG_WM(F("connected. Local IP: "));
+    droneDebug->DEBUG_WM(WiFi.localIP().toString());
 
     led.flash(3);
     droneCloudOTA = new DroneCloudOTA();
@@ -218,7 +220,7 @@ void setup()
   }
   else
   {
-    Serial.println(ESP_wifiManager.getStatus(WiFi.status()));
+    droneDebug->DEBUG_WM(ESP_wifiManager.getStatus(WiFi.status()));
   }
 
   if (WiFi.status() == WL_CONNECTED)
@@ -227,7 +229,7 @@ void setup()
     if (!setupCloudIoT())
     {
       led.flash(10, 100, 100, 10000, 10000);
-      Serial.println(F("Failed to connect with cloud backend"));
+      droneDebug->DEBUG_WM(F("Failed to connect with cloud backend"));
       led.flash(250, 100, 100);
       return;
     }
@@ -235,15 +237,15 @@ void setup()
 
   if (!bme280.begin(0x76, &Wire)) // may be 77
   {
-    Serial.println("Could not find a valid BME280 sensor, check wiring!");
+    droneDebug->DEBUG_WM("Could not find a valid BME280 sensor, check wiring!");
   }
   else if (!bme280.begin(0x77, &Wire)) // may be 77
   {
-    Serial.println("Could not find a valid BME280 sensor, check wiring!");
+    droneDebug->DEBUG_WM("Could not find a valid BME280 sensor, check wiring!");
   }
   else
   {
-    Serial.println("No BME280 sensor found ... check your wiring?");
+    droneDebug->DEBUG_WM("No BME280 sensor found ... check your wiring?");
 
     i2cdetect();
     led.flash(250, 100, 100);
@@ -251,12 +253,12 @@ void setup()
 
   if (tsl.begin(&Wire, 0x29))
   {
-    Serial.println("Found a TSL2591 sensor");
+    droneDebug->DEBUG_WM("Found a TSL2591 sensor");
     printTSL2591SensorDetails();
   }
   else
   {
-    Serial.println("No TSL2591 sensor found ... check your wiring?");
+    droneDebug->DEBUG_WM("No TSL2591 sensor found ... check your wiring?");
     i2cdetect();
     led.flash(250, 200, 200);
   }
@@ -279,7 +281,7 @@ void loop()
   // Wifi Dies? Start Portal Again
   if (WiFi.status() != WL_CONNECTED)
   {
-    Serial.println(ESP_wifiManager.getStatus(WiFi.status()));
+    droneDebug->DEBUG_WM(ESP_wifiManager.getStatus(WiFi.status()));
   }
   else
   {

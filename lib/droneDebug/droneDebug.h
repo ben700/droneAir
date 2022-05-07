@@ -8,12 +8,12 @@ public:
     DroneDebug(String _prefix);
     ~DroneDebug();
 
-    template <typename Generic>
-    static void DEBUG_MSG(String _prefix, Generic text);
+    
+    static void DEBUG_MSG(String _prefix, String text);
     
 
-    template <typename Generic>
-    void DEBUG_WM(Generic text);
+
+    void DEBUG_WM(String text);
     void setPrefix(String _prefix);
 
 private:
